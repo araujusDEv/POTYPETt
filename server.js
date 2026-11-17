@@ -836,7 +836,8 @@ function migrateLegacyState() {
   if (changed) saveState('requests', migrated);
 }
 migrateLegacyState();
-db.exec('PRAGMA optimize;');
+// Manutenção opcional do SQLite local; provedores remotos podem recusar este PRAGMA.
+if (!databaseConfig.remote) db.exec('PRAGMA optimize;');
 db.prepare('DELETE FROM sessions WHERE created_at < ?').run(
   new Date(Date.now() - SESSION_MAX_AGE_MS).toISOString(),
 );
