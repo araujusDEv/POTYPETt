@@ -17,7 +17,7 @@ async function start(marker) {
       DATA_DIR: '/var/data/appet', HOST: '127.0.0.1', PORT: '3213', COOKIE_SECURE: '1', BACKUP_AUTO: '0',
       EMAIL_TRANSPORT: 'file', PUBLIC_BASE_URL: base, MAIL_FROM: 'potypet@example.test', MAIL_QUEUE_KEY: crypto.randomBytes(32).toString('base64'),
       ADMIN_EMAIL: 'gestao@example.test', ADMIN_PASSWORD: adminPassword, ADMIN_RECOVERY_ID: '',
-      DONOR_EMAIL: 'hypestoreoofc@gmai.com', DONOR_NAME: 'Associação Poty Amigos dos Bichos', DONOR_PASSWORD: donorPassword,
+      DONOR_EMAIL: 'ongpotypet@gmail.com', DONOR_NAME: 'Associação Poty Amigos dos Bichos', DONOR_PASSWORD: donorPassword,
       SEED_SAMPLE_DATA: '0', SEED_DEMO_ACCOUNTS: '0', USUARIO_SENHA: userPassword, CADASTRO_INICIAL: '1', TRUST_PROXY: '0', TRUSTED_PROXY_IPS: '' } });
   for (const stream of [child.stdout, child.stderr]) stream.on('data', (s) => { log += s; });
   for (let n = 0; !log.includes(marker); n++) {
@@ -41,8 +41,8 @@ async function call(method, route, body, status = 200, authenticated = false) {
     config = database.settings({ DATABASE_DRIVER: 'turso', NODE_ENV: 'test', TURSO_DATABASE_URL: 'http://127.0.0.1:' + port, TURSO_AUTH_TOKEN: token });
     await start('Após confirmar o e-mail de Maria'); inspector = database.openDatabase('', config);
     assert.equal(inspector.loadState('animals').length, 0);
-    assert.equal(inspector.prepare('SELECT email_verified_at FROM users WHERE email=?').get('potypett+maria@gmail.com'), undefined);
-    await call('POST', '/api/auth/login', { email: 'potypett+maria@gmail.com', password: userPassword }, 401);
+    assert.equal(inspector.prepare('SELECT email_verified_at FROM users WHERE email=?').get('hypestoreoofc@gmail.com'), undefined);
+    await call('POST', '/api/auth/login', { email: 'hypestoreoofc@gmail.com', password: userPassword }, 401);
     const previews = path.join(runtime, 'email-preview'); let confirmation;
     for (let n = 0; !confirmation; n++) {
       if (n > 300) throw Error('Confirmação não enviada');
@@ -56,6 +56,10 @@ async function call(method, route, body, status = 200, authenticated = false) {
     await call('POST', '/api/auth/verify-email', { token: confirmation, password: userPassword }, 400);
     await stop(); await start('Carga inicial concluída.');
     const records = inspector.loadState('animals'), campaigns = inspector.loadState('campaigns');
+    const ong = inspector.prepare('SELECT id,account_type FROM users WHERE email=?').get('ongpotypet@gmail.com');
+    const person = inspector.prepare('SELECT id,account_type FROM users WHERE email=?').get('hypestoreoofc@gmail.com');
+    assert.equal(ong.account_type, 'ong'); assert.equal(person.account_type, 'usuario');
+    assert.ok(records.every((animal) => Number(animal.ownerId) === (animal.name === 'Biscoito' ? person.id : ong.id)));
     assert.equal(records.length, 5); assert.ok(records.every((a) => a.approvalStatus === 'pending'));
     assert.equal(campaigns.length, 2); assert.ok(campaigns.every((c) => c.status === 'review' && c.approved === null));
     assert.equal(inspector.loadState('missing').length, 2); assert.equal(inspector.prepare('SELECT COUNT(*) AS n FROM campaign_files').get().n, 2);

@@ -29,7 +29,7 @@ async function start(extra = {}, marker = 'Carga inicial concluída.') {
       EMAIL_TRANSPORT: 'disabled', BACKUP_AUTO: '0', COOKIE_SECURE: '1',
       SEED_SAMPLE_DATA: '0', SEED_DEMO_ACCOUNTS: '0', ADMIN_RECOVERY_ID: '', TRUST_PROXY: '0', TRUSTED_PROXY_IPS: '',
       ADMIN_EMAIL: 'gestao@potypet.org', ADMIN_PASSWORD: adminPassword,
-      DONOR_EMAIL: 'hypestoreoofc@gmai.com', DONOR_NAME: 'Associação Poty Amigos dos Bichos', DONOR_PASSWORD: donorPassword,
+      DONOR_EMAIL: 'ongpotypet@gmail.com', DONOR_NAME: 'Associação Poty Amigos dos Bichos', DONOR_PASSWORD: donorPassword,
       USUARIO_SENHA: userPassword, CADASTRO_INICIAL: '1', ...extra } });
   for (const stream of [child.stdout, child.stderr]) stream.on('data', (d) => { log += d; });
   for (let n = 0; !log.includes(marker); n++) {

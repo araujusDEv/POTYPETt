@@ -21,7 +21,7 @@ async function start(transport = 'disabled') {
     COOKIE_SECURE: '1', BACKUP_AUTO: '0', EMAIL_TRANSPORT: transport, MAIL_QUEUE_KEY: crypto.randomBytes(32).toString('base64'),
     MAIL_FROM: 'avisos@potypet.org', PUBLIC_BASE_URL: base, RENDER_EXTERNAL_URL: '',
     ADMIN_EMAIL: 'gestao@potypet.org', ADMIN_PASSWORD: 'Gestao9' + crypto.randomBytes(12).toString('hex'),
-    DONOR_EMAIL: 'hypestoreoofc@gmai.com', DONOR_NAME: 'Perfil responsável inicial' } });
+    DONOR_EMAIL: 'ongpotypet@gmail.com', DONOR_NAME: 'Perfil responsável inicial' } });
   for (const stream of [child.stdout, child.stderr]) stream.on('data', (d) => { output += d; });
   for (let n = 0; !output.includes('PotyPet rodando'); n++) {
     if (n > 400 || child.exitCode !== null) throw Error('Servidor isolado não iniciou.');
@@ -32,8 +32,8 @@ async function stop() { if (child?.exitCode === null && child.signalCode === nul
 function configuration() {
   const animal = (name, owner, species, photo) => ({ name, owner, species, photo, breed: 'SRD', sex: 'femea', size: 'pequeno', age_group: 'adulto', city: 'Apodi', state: 'RN', neighborhood: 'Centro', description: name + ' gosta de companhia e de uma rotina tranquila.', history: 'Foi acolhida e recebeu os cuidados necessários antes de procurar uma família.', contact: '(84) 90000-0101', vaccinated: true, dewormed: true, neutered: true });
   const campaign = (owner, name, category) => ({ owner, title: 'Cuidados para ' + name, beneficiaryName: name, category, photo: 'campanha-' + owner + '.png', kind: 'campaign', target: 'animal', description: name + ' precisa de apoio para manter a alimentação e os cuidados durante o acolhimento.', costs: 'Ração por três meses e cuidados com a acomodação.', goalCents: 100000, raisedCents: 0, organizer: 'Rede de cuidado', city: 'Apodi', state: 'RN', contact: '(84) 90000-0101', beneficiary: 'Maria Helena Souza', receiverRelation: 'responsavel', pixKeyType: 'aleatoria', pixKey: crypto.randomUUID(), photoConsent: true });
-  return { ong: { name: 'Associação Poty Amigos dos Bichos', email: 'hypestoreoofc@gmai.com' },
-    usuario: { name: 'Maria Helena Souza', email: 'potypett+maria@gmail.com', phone: '(84) 90000-0202', city: 'Mossoró', state: 'RN', accountType: 'usuario', termsAccepted: true },
+  return { ong: { name: 'Associação Poty Amigos dos Bichos', email: 'ongpotypet@gmail.com' },
+    usuario: { name: 'Maria Helena Souza', email: 'hypestoreoofc@gmail.com', phone: '(84) 90000-0202', city: 'Mossoró', state: 'RN', accountType: 'usuario', termsAccepted: true },
     organization: { city: 'Apodi', state: 'RN', description: 'Acolhemos cães e gatos e acompanhamos a chegada de cada animal à nova família.', area: 'Apodi e região', contact: '(84) 90000-0101', contactConsent: true },
     animals: [animal('Pipoca', 'ong', 'cachorro', 'pipoca.jpg'), animal('Fred', 'ong', 'gato', 'fred.jpg'), animal('Luna', 'ong', 'cachorro', 'luna.jpg'), animal('Mel', 'ong', 'gato', 'mel.jpg'), animal('Biscoito', 'usuario', 'cachorro', 'biscoito.webp')],
     missing: ['Bolinha', 'Tigre'].map((name, i) => ({ name, owner: 'ong', species: i ? 'gato' : 'cachorro', color: 'Caramelo', approx_age: '3 anos', missing_date: '2026-01-01', city: 'Apodi', state: 'RN', last_seen_location: 'Praça central de Apodi', features: 'Usa coleira azul e atende pelo nome.', contact: '(84) 90000-0101', photo: 'busca-' + i + '.png' })),
@@ -62,6 +62,8 @@ function configuration() {
     await assert.rejects(execute({ env: { ...env, USUARIO_SENHA: 'curta' } }), (e) => /pipoca.jpg/.test(e.message) && /fred.jpg/.test(e.message) && /USUARIO_SENHA/.test(e.message));
     assert.equal(requests.length, 0);
     for (const name of ['pipoca', 'fred']) fs.renameSync(path.join(directory, name + '.saved'), path.join(directory, name + '.jpg'));
+    await assert.rejects(execute({ env: { ...env, USUARIO_SENHA: 'SomenteLetrasFortes' } }), /USUARIO_SENHA/);
+    assert.equal(requests.length, 0);
     fs.writeFileSync(path.join(directory, 'campanha-ong.png'), jpeg);
     await assert.rejects(execute(), /conteúdo diferente/); assert.equal(requests.length, 0);
     fs.writeFileSync(path.join(directory, 'campanha-ong.png'), png);
