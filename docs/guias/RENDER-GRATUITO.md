@@ -4,6 +4,8 @@ Use **Render Free** para executar o site, **Turso Free** para guardar o banco e 
 
 O erro `mkdir '/var/data/appet'` é resolvido usando `DATABASE_DRIVER=turso`. Não é preciso contratar disco. As contas, fotos, campanhas, sessões e históricos ficam no Turso, fora do armazenamento temporário do Render. Os textos e as nove fotos iniciais acompanham o código em `conteudo-inicial/`.
 
+Contas atualizadas em 17/11/2026: administrador e remetente `potypett@gmail.com`; ONG `ongpotypet@gmail.com`; usuário comum `hypestoreoofc@gmail.com`. O cadastro inicial usa esses dois últimos endereços em `conteudo-inicial/dados.json`. As senhas são definidas somente no Render; para as duas contas do cadastro inicial, use 12 a 128 caracteres, com letras e números.
+
 ## 1. Atualizar o GitHub
 
 Extraia o ZIP e envie **os arquivos extraídos**, incluindo as pastas, para a raiz do mesmo repositório conectado ao Render. Pode usar o repositório antigo, desde que seja o deste site. `package.json`, `server.js` e `render.yaml` devem aparecer na raiz. O ZIP sozinho não serve para o deploy.
@@ -47,6 +49,8 @@ No serviço existente, mantenha o plano **Free** e abra **Environment**. Use **B
 
 Configure:
 
+Os endereços e valores fixos da tabela estão prontos para copiar. Nas linhas que pedem token, URL, chave ou senha, coloque o dado real obtido nas etapas anteriores; as descrições dessas linhas são instruções de preenchimento.
+
 | Variável | Valor |
 | --- | --- |
 | `NODE_VERSION` | `24.21.0` |
@@ -56,7 +60,7 @@ Configure:
 | `TURSO_DATABASE_URL` | URL do banco criado |
 | `TURSO_AUTH_TOKEN` | Token de leitura e escrita desse banco |
 | `EMAIL_TRANSPORT` | `gmail_http` |
-| `MAIL_FROM` | Mesma conta Google configurada no script |
+| `MAIL_FROM` | `potypett@gmail.com`, a conta Google proprietária do script |
 | `MAIL_HTTP_URL` | URL do aplicativo Google, terminada em `/exec` |
 | `MAIL_HTTP_SECRET` | Mesma chave base64 configurada no Google |
 | `MAIL_QUEUE_KEY` | **Outra** chave de 32 bytes em base64; gere novamente com o comando acima |
@@ -66,14 +70,16 @@ Configure:
 | `BACKUP_AUTO` | `0` |
 | `TRUST_PROXY` | `0` |
 | `CADASTRO_INICIAL` | `1` |
-| `ADMIN_EMAIL` | Seu e-mail de administrador |
+| `ADMIN_EMAIL` | `potypett@gmail.com` |
 | `ADMIN_PASSWORD` | Senha exclusiva, mínimo 12 caracteres, letras e números |
-| `DONOR_EMAIL` | `hypestoreoofc@gmai.com`, exatamente como solicitado para a ONG |
+| `DONOR_EMAIL` | `ongpotypet@gmail.com` |
 | `DONOR_NAME` | `Associação Poty Amigos dos Bichos` |
 | `DONOR_PASSWORD` | Outra senha forte para a ONG |
 | `USUARIO_SENHA` | Outra senha forte para Maria Helena Souza |
 
 Remova `DATA_DIR=/var/data/appet` e `PERSISTENT_DISK_PATH`: não são usados no modo Turso. Não adicione disco, Render Postgres ou plano pago. Remova as variáveis SMTP antigas para não confundir o próximo ajuste.
+
+No serviço Render já existente, atualize `DONOR_EMAIL` manualmente em Environment; enviar o `render.yaml` ao GitHub não altera sozinho um serviço criado manualmente. O endereço do usuário vem do JSON incluído no pacote; sua senha vem de `USUARIO_SENHA`.
 
 O Render define `PORT` e `RENDER_EXTERNAL_URL` automaticamente. O aplicativo usa esse endereço HTTPS nos links de confirmação. Se já houver `PUBLIC_BASE_URL`, corrija para a origem real do site ou remova para usar `RENDER_EXTERNAL_URL`; não deixe `https://SEU_SITE`.
 
@@ -83,7 +89,7 @@ Para um serviço novo, pode usar **New → Blueprint** com o `render.yaml` da ra
 
 1. Salve o ambiente e use **Manual Deploy → Deploy latest commit**.
 2. Aguarde o site iniciar. Os logs devem indicar `Banco remoto Turso/libSQL conectado`.
-3. Na primeira carga, Maria receberá a confirmação em `potypett+maria@gmail.com`. Abra o link recebido e informe a senha definida em `USUARIO_SENHA`. Confira também a caixa de spam.
+3. Na primeira carga, Maria receberá a confirmação em `hypestoreoofc@gmail.com`. Abra o link recebido e informe a senha definida em `USUARIO_SENHA`. Confira também a caixa de spam.
 4. Use **Restart service** no Render para retomar a carga. Aguarde `Carga inicial concluída. Aprovações seguem pelo painel.`.
 5. Entre em `/login.html` com `ADMIN_EMAIL` e `ADMIN_PASSWORD`. Confira os cinco anúncios de adoção e as duas campanhas e decida pelo painel. Eles só aparecem no catálogo público após aprovação. Bolinha e Tigre seguem a publicação normal dos desaparecidos.
 6. Faça outro reinício e confira uma foto e as aprovações: os dados devem permanecer. O cadastro não duplica os itens já existentes.

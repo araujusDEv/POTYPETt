@@ -18,7 +18,7 @@ O script precisa de apenas estas variáveis:
 | --- | --- |
 | `CADASTRO_INICIAL` | Precisa ser exatamente `1`. Sem isso, não lê os dados nem chama a API. |
 | `CADASTRO_URL` | Origem do site. Padrão `http://127.0.0.1:3000`. Para um site remoto, use HTTPS. |
-| `DONOR_PASSWORD` | Senha atual de `hypestoreoofc@gmai.com`, a ONG já existente. |
+| `DONOR_PASSWORD` | Senha atual da ONG `ongpotypet@gmail.com`. |
 | `USUARIO_SENHA` | Senha de Maria, com 12 a 128 caracteres, letra e número. O mesmo mínimo é conferido para a senha da ONG. |
 
 O domínio `gmai.com` do e-mail da ONG foi mantido exatamente como informado. Confira se corresponde à conta já criada. O script não corrige o endereço nem cria outra ONG se o login falhar.
@@ -73,7 +73,7 @@ Use os IDs impressos pelo script e a URL configurada em `CADASTRO_URL`:
 | Item | Onde conferir |
 | --- | --- |
 | ONG e perfil público | Entre como a ONG e abra `/organizacoes.html?editar=1`. Confira a apresentação e o contato. Veja o perfil público em `/organizacoes.html`. |
-| Maria | Entre em `/login.html` com `potypett+maria@gmail.com` e confira os dados em `/configuracoes.html`. Confirme o e-mail se solicitado. |
+| Maria | Entre em `/login.html` com `hypestoreoofc@gmail.com` e confira os dados em `/configuracoes.html`. Confirme o e-mail se solicitado. |
 | Cinco adoções pendentes | Em cada conta, `/painel-doador.html`. No administrador, `/admin.html`; confira as fotos e relatos antes de aprovar. |
 | Dois desaparecidos | `/desaparecidos.html`; detalhes em `/desaparecido.html?id=ID`. |
 | Duas campanhas pendentes | Em cada conta, `/campanhas.html`. Como administrador, `/campanhas.html?admin=1` para conferir finalidade, custos, recebedor e evidências e registrar sua decisão. |
