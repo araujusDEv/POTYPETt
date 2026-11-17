@@ -1,8 +1,8 @@
-# PotyPet 4.7.0 — demonstração no Render Free.
-# Dados temporários: não use com cadastros, animais ou pagamentos reais.
+# PotyPet — Render Free + banco Turso Free + e-mail Google por HTTPS.
+# Guia: docs/guias/RENDER-GRATUITO.md. Nenhum disco ou serviço pago é criado.
 services:
   - type: web
-    name: potypet-demo
+    name: potypet
     runtime: node
     plan: free
     numInstances: 1
@@ -14,13 +14,25 @@ services:
       - key: NODE_VERSION
         value: 24.21.0
       - key: NODE_ENV
-        value: development
+        value: production
       - key: HOST
         value: 0.0.0.0
-      - key: DATA_DIR
-        value: /tmp/potypet-demo
+      - key: DATABASE_DRIVER
+        value: turso
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
       - key: EMAIL_TRANSPORT
-        value: disabled
+        value: gmail_http
+      - key: MAIL_FROM
+        sync: false
+      - key: MAIL_QUEUE_KEY
+        sync: false
+      - key: MAIL_HTTP_URL
+        sync: false
+      - key: MAIL_HTTP_SECRET
+        sync: false
       - key: SEED_DEMO_ACCOUNTS
         value: "0"
       - key: SEED_SAMPLE_DATA
@@ -32,12 +44,16 @@ services:
       - key: TRUST_PROXY
         value: "0"
       - key: DONOR_NAME
-        value: Perfil de demonstração
+        value: Associação Poty Amigos dos Bichos
+      - key: CADASTRO_INICIAL
+        value: "1"
+      - key: USUARIO_SENHA
+        sync: false
       - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_PASSWORD
         sync: false
       - key: DONOR_EMAIL
-        sync: false
+        value: hypestoreoofc@gmai.com
       - key: DONOR_PASSWORD
         sync: false

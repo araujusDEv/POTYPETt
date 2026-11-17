@@ -1,128 +1,44 @@
-# PotyPet — GitHub e Render gratuito
+# PotyPet — Render gratuito com dados persistidos no Turso
 
-Para publicar com as postagens e fotos já incluídas e cadastrar automaticamente ao iniciar, siga [docs/guias/POSTAGENS-INCLUIDAS.md](docs/guias/POSTAGENS-INCLUIDAS.md). O cadastro mantém as aprovações pelo painel e as exigências de armazenamento e segurança do servidor.
+Este pacote foi adaptado para **Render Free + Turso Free + e-mail Google por HTTPS**, com as postagens e nove fotos já incluídas. O `render.yaml` não cria disco ou serviço pago. As contas e os segredos dos provedores são configurados por você, conforme o guia.
 
-Este pacote contém a aplicação original PotyPet 4.7.0, em Node.js e SQLite. A identidade visual, as páginas, as rotas e as regras do sistema foram preservadas. A configuração padrão deste pacote é uma **demonstração no Render Free**, sem disco pago e sem anúncios de exemplo importados.
+**Comece por [RENDER-GRATUITO.md](docs/guias/RENDER-GRATUITO.md).** Ele explica como atualizar o mesmo repositório no GitHub, criar o banco, preparar o e-mail e corrigir o erro de `/var/data/appet` sem contratar disco.
 
-**O armazenamento é temporário.** Novas contas, anúncios, fotos, solicitações e demais alterações podem ser perdidos quando o Render suspender, reiniciar ou atualizar o serviço. Use somente dados fictícios. O pacote não contém banco operacional, senhas reais, backups ou exportação do site antigo. Publicar este código não transfere os dados de outra hospedagem.
+## Publicação
 
-## 1. Colocar no GitHub
+1. Envie os arquivos extraídos para a raiz do repositório conectado ao Render; inclua `conteudo-inicial/`, `lib/`, `scripts/` e `integracoes/`.
+2. Crie um banco **Turso Free compatível com libSQL** e configure o aplicativo Google de e-mail descrito no guia.
+3. No Render, use plano **Free**, Build `npm ci`, Start `npm start`, Node **24.21.0** e as variáveis do guia. O modo remoto usa `DATABASE_DRIVER=turso`; dispensa `DATA_DIR` e disco persistente.
+4. Confirme o e-mail de Maria, reinicie o serviço e revise os cinco anúncios e duas campanhas no painel administrativo. As aprovações continuam manuais.
 
-1. Extraia este ZIP no computador.
-2. Crie um repositório no GitHub. Ele pode ser privado; conecte a mesma conta no Render.
-3. Envie **os arquivos e as pastas extraídos**, incluindo `.github`, `.gitignore` e `.node-version`. Não envie apenas o ZIP. `package.json`, `package-lock.json`, `server.js` e `render.yaml` devem aparecer na raiz do repositório, junto de `index.html`, `css`, `js`, `img`, `lib` e demais pastas.
-4. Não envie `node_modules`, `.env`, banco de dados, uploads, backups ou chaves. A lista `.gitignore` é usada pelo Git; no envio pelo navegador, confira manualmente os arquivos selecionados.
+A pasta `conteudo-inicial/` contém os textos, contatos e fotos fornecidos para publicação, sem senhas. Prefira repositório privado. Não envie `.env`, `node_modules`, bancos, backups, tokens ou arquivos de execução. `fotos-cadastro/` é preparada automaticamente e continua ignorada pelo Git.
 
-Se usar o terminal, execute na pasta extraída, depois de criar um repositório vazio:
+## Funcionamento
 
-```bash
-git init
-git add .
-git commit -m "Preparar PotyPet para demonstracao no Render"
-git branch -M main
-git remote add origin URL_DO_SEU_REPOSITORIO
-git push -u origin main
+O servidor mantém as páginas, validações, sessões, confirmação de e-mail, recuperação de senha e aprovação administrativa do PotyPet 4.7.0. No modo Turso, as consultas usam o SDK oficial libSQL por HTTPS. Fotos e anexos ficam no banco externo, inclusive coleções grandes divididas em partes com verificação de integridade. O banco remoto indisponível interrompe a operação; não há troca automática para um banco local vazio.
+
+O envio de e-mail usa `MailApp` em um aplicativo Google seu, com requisições assinadas. O segredo fica somente no ambiente e nas Propriedades do script. A fila permanece cifrada no banco e falhas de envio não liberam contas sem confirmação. A configuração SMTP original continua disponível em hospedagens compatíveis.
+
+Os planos gratuitos têm cotas e o Render pode suspender o processo sem tráfego. Siga a etapa de verificação do guia depois da implantação: os testes locais não certificam as credenciais, a permanência no provedor ou a chegada na sua caixa.
+
+## Uso local e testes
+
+Com Node 24.21.0:
+
+```powershell
+npm ci
+npm test
+npm run test:gratuito
 ```
 
-Substitua `URL_DO_SEU_REPOSITORIO` pela URL fornecida pelo GitHub. Se o Git solicitar nome/e-mail de autor ou autenticação, use sua própria conta. Não coloque token ou senha dentro dos arquivos.
+`npm test` inclui os testes de segurança e fluxos existentes, cadastro inicial e hospedagem remota. `test:gratuito` executa apenas os cenários novos de banco HTTP, e-mail assinado e persistência após reinício. Não envia e-mails reais nem acessa contas Turso.
 
-## 2. Publicar no Render — caminho recomendado: Blueprint
+Para desenvolvimento local, o padrão permanece SQLite e `npm start` inicia o site. Para produção com SQLite local, use `DATABASE_DRIVER=sqlite`, armazenamento persistente privado fora do código e transporte de e-mail válido, conforme `.env.production.example`. Essa alternativa não corresponde ao Render Free. `render.demo.yaml` permanece como configuração antiga de prévia temporária; o guia gratuito e o `render.yaml` da raiz são os caminhos deste pacote.
 
-1. Acesse https://dashboard.render.com/ e conecte o GitHub.
-2. Crie um **Blueprint** e selecione o repositório. O Render deve detectar o `render.yaml` da raiz.
-3. Confira que o serviço é **Web Service**, runtime **Node**, plano **Free**, sem disco ou banco adicional. Este pacote não exige serviço pago.
-4. Preencha os quatro campos de credenciais pedidos pelo Blueprint:
-   - `ADMIN_EMAIL`: endereço válido que você escolherá para entrar como administrador.
-   - `ADMIN_PASSWORD`: senha exclusiva com pelo menos 12 caracteres, letras e números.
-   - `DONOR_EMAIL`: outro endereço válido, diferente do administrador, para o perfil responsável de demonstração.
-   - `DONOR_PASSWORD`: outra senha forte, diferente da senha administrativa.
-5. Inicie o deploy. Depois de concluído, abra o endereço HTTPS fornecido pelo Render.
-6. Acesse `/login.html` e entre com o `ADMIN_EMAIL` e a `ADMIN_PASSWORD` definidos no painel. A conta inicial é criada no primeiro banco vazio. Não existe senha fixa embutida no ZIP.
+## Documentação
 
-O nome `potypet-demo` identifica um novo serviço de demonstração. Não selecione um serviço antigo com dados reais para substituí-lo automaticamente. A publicação automática por novos commits está desligada no Blueprint; futuras atualizações devem ser iniciadas manualmente no Render.
+- [Publicar gratuitamente](docs/guias/RENDER-GRATUITO.md)
+- [Postagens incluídas](docs/guias/POSTAGENS-INCLUIDAS.md)
+- [Importador HTTP e como desfazer](docs/guias/CADASTRO-INICIAL.md)
 
-## Alternativa: criar um Web Service manualmente
-
-Se não usar Blueprint, copie também as variáveis; o Render não aplica `render.yaml` automaticamente a um Web Service criado manualmente.
-
-| Campo | Valor |
-| --- | --- |
-| Tipo | Web Service, não Static Site |
-| Runtime | Node |
-| Plano | Free |
-| Root Directory | Deixe vazio se os arquivos estão na raiz |
-| Build Command | `npm ci` |
-| Start Command | `npm start` |
-| Health Check Path | `/api/health` |
-
-Em Environment, configure:
-
-| Variável | Valor |
-| --- | --- |
-| `NODE_VERSION` | `24.21.0` |
-| `NODE_ENV` | `development` |
-| `HOST` | `0.0.0.0` |
-| `DATA_DIR` | `/tmp/potypet-demo` |
-| `EMAIL_TRANSPORT` | `disabled` |
-| `SEED_DEMO_ACCOUNTS` | `0` |
-| `SEED_SAMPLE_DATA` | `0` |
-| `BACKUP_AUTO` | `0` |
-| `COOKIE_SECURE` | `1` |
-| `TRUST_PROXY` | `0` |
-| `DONOR_NAME` | `Perfil de demonstração` |
-| `ADMIN_EMAIL` | Seu e-mail de administrador |
-| `ADMIN_PASSWORD` | Sua senha forte |
-| `DONOR_EMAIL` | Outro e-mail, distinto do administrador |
-| `DONOR_PASSWORD` | Outra senha forte |
-
-Não fixe `PORT`: o servidor lê a porta fornecida pelo Render. Não defina `PERSISTENT_DISK_PATH` neste plano. Se estiver reutilizando configurações de outro serviço, prefira criar um serviço novo; variáveis antigas podem exigir SMTP, backup ou disco inexistentes.
-
-## 3. Conferir após o deploy
-
-- Abra `/api/health`: deve responder JSON com `ok: true`.
-- Abra a página inicial, o catálogo e o login.
-- Entre como administrador usando as credenciais do painel.
-- Em sessão separada, cadastre uma conta **fictícia** e faça login.
-- Cadastre um animal fictício e confira a análise administrativa antes de aparecer no catálogo. Use uma imagem autorizada para teste.
-- Teste a solicitação com outra conta. Nunca simule interesse em um caso real ou transfira dinheiro durante a demonstração.
-
-O catálogo começa sem animais importados. Os módulos existentes continuam no código. Neste modo, cadastro e login não confirmam o endereço de e-mail; recuperação registra um pedido interno, sem enviar link por e-mail. Pix gerado não comprova recebimento bancário.
-
-## Limites do modo gratuito
-
-- O serviço suspende após cerca de 15 minutos sem acessos e pode levar cerca de um minuto para reativar.
-- Não existe disco persistente no Free: o banco SQLite e os arquivos criados em execução são temporários. Guardar o código no GitHub não guarda esses dados.
-- SMTP nas portas 25, 465 e 587 é bloqueado no serviço Free. Por isso, a demonstração usa `EMAIL_TRANSPORT=disabled`; ela não envia confirmação, recuperação ou avisos reais por e-mail.
-- Há cotas de uso do provedor. Não foi contratado nem publicado nenhum serviço nesta preparação.
-
-Para uso real, será necessário escolher armazenamento persistente ou adaptar a aplicação para serviços externos, configurar envio real de e-mail e concluir as pendências operacionais. A referência anterior de hospedagem persistente está preservada em `docs/render.persistente.original.yaml` e **não** é a configuração padrão deste ZIP.
-
-## Como o código está organizado
-
-```
-server.js          servidor: banco SQLite, sessão, rotas da API (/api) e entrega dos arquivos do site
-lib/               regras que ficam fora do server.js (validação, adoção, campanhas, e-mail, backup)
-*.html             uma página por arquivo, na raiz
-js/                scripts do navegador; js/pages/ tem um arquivo por página
-css/  img/  fonts/ estilos, imagens e fonte
-data/seed.json     dados de exemplo da demonstração
-scripts/           comandos de apoio: backup, conferência do pacote e teste de e-mail
-tests/             testes automatizados (npm test)
-docs/guias/        guias de publicação e operação
-```
-
-Cada arquivo de `lib/` e `scripts/` começa com um comentário dizendo para que serve, e o
-`server.js` tem comentários marcando onde começa cada grupo de rotas.
-
-## Rodar localmente e testar
-
-Use Node.js `24.21.0` ou atualização posterior da série 24. Execute `npm ci` e `npm start`; abra http://127.0.0.1:3000. O Node não carrega arquivos `.env` automaticamente neste projeto. Fora do Render, se não definir credenciais, o servidor gera senhas aleatórias e mostra o primeiro acesso no terminal local.
-
-`npm test` executa as suítes existentes com bases fictícias isoladas. `npm run check:package` procura dados operacionais e padrões de segredos. O relatório desta preparação está em `docs/guias/VALIDACAO-RENDER.md`.
-
-## Documentação oficial consultada em 18/10/2026
-
-- https://render.com/docs/free
-- https://render.com/docs/blueprint-spec
-- https://render.com/docs/node-version
-- https://nodejs.org/en/blog/release/v24.21.0
+Os demais guias de hospedagem do projeto descrevem também a alternativa SQLite com disco e SMTP. Para este pacote no Render Free, use as variáveis do novo guia. Atualizar o código não migra automaticamente um banco operacional antigo. As configurações legais e os dados dos responsáveis devem ser conferidos por quem administra o site.

@@ -24,7 +24,8 @@ const validate = require('./lib/input-validation.cjs');
 const accountAccess = require('./lib/account-access.cjs');
 const clientIp = require('./lib/client-ip.cjs');
 const { validateReturnDestination } = require('./js/auth.js');
-const { DatabaseSync } = require('node:sqlite');
+const database = require('./lib/database.cjs');
+const databaseConfig = database.settings();
 if (
   Number(process.versions.node.split('.')[0]) !== 24 ||
   Number(process.versions.node.split('.')[1]) < 21
@@ -34,13 +35,16 @@ if (
   );
 
 const ROOT = __dirname;
-const DATA_DIR = process.env.DATA_DIR
+// Turso guarda o banco e os anexos remotamente. A pasta local guarda só arquivos temporários.
+const DATA_DIR = databaseConfig.remote
+  ? path.resolve(process.env.RUNTIME_DIR || path.join(require('node:os').tmpdir(), 'potypet-runtime'))
+  : process.env.DATA_DIR
   ? path.resolve(process.env.DATA_DIR)
   : path.join(ROOT, 'data');
 const DB_PATH = path.join(DATA_DIR, 'adotapet.db');
 const SEED_PATH = path.join(ROOT, 'data', 'seed.json');
 if (process.env.NODE_ENV === 'production') {
-  if (!process.env.DATA_DIR)
+  if (!databaseConfig.remote && !process.env.DATA_DIR)
     throw Error('Defina DATA_DIR em armazenamento persistente para produção.');
   if (process.env.SEED_DEMO_ACCOUNTS === '1')
     throw Error('Contas demo não são permitidas em produção.');
@@ -74,11 +78,11 @@ setInterval(
 ).unref();
 let bootstrapCredentials = null;
 
-const storage = require('./lib/deployment-storage.cjs')({ root: ROOT, dataDir: DATA_DIR });
+const storage = require('./lib/deployment-storage.cjs')({ root: ROOT, dataDir: DATA_DIR, remoteDatabase: databaseConfig.remote });
 // Banco SQLite. As tabelas são criadas logo abaixo; colunas novas entram por ensureUserColumn,
 // sem apagar dados já gravados.
-const db = new DatabaseSync(DB_PATH);
-if (process.env.NODE_ENV === 'production' && process.platform !== 'win32')
+const db = database.openDatabase(DB_PATH, databaseConfig);
+if (!databaseConfig.remote && process.env.NODE_ENV === 'production' && process.platform !== 'win32')
   fs.chmodSync(DB_PATH, 0o600);
 db.exec(`
   PRAGMA busy_timeout = 1500;
@@ -113,10 +117,12 @@ db.exec(`
   );
 `);
 
+const userColumns = new Set(db.prepare('PRAGMA table_info(users)').all().map((column) => column.name));
 function ensureUserColumn(name, definition) {
-  const columns = db.prepare('PRAGMA table_info(users)').all();
-  if (!columns.some((column) => column.name === name))
+  if (!userColumns.has(name)) {
     db.exec(`ALTER TABLE users ADD COLUMN ${name} ${definition}`);
+    userColumns.add(name);
+  }
 }
 ensureUserColumn('organization_kind', "TEXT NOT NULL DEFAULT 'nao_informado'");
 ensureUserColumn('account_type', "TEXT NOT NULL DEFAULT 'usuario'");
@@ -342,6 +348,7 @@ function publicUser(row, includePrivate = false, includePolicy = true) {
 // Várias coleções, como animais e desaparecidos, são guardadas como JSON na tabela app_state.
 // loadState lê a lista inteira e saveState grava de volta.
 function loadState(key) {
+  if (databaseConfig.remote) return db.loadState(key);
   const row = db.prepare('SELECT value FROM app_state WHERE key = ?').get(key);
   if (!row) return [];
   try {
@@ -351,6 +358,7 @@ function loadState(key) {
   }
 }
 function saveState(key, value) {
+  if (databaseConfig.remote) return db.saveState(key, value, now());
   db.prepare(
     `INSERT INTO app_state(key,value,updated_at) VALUES(?,?,?)
               ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at`,
@@ -1088,7 +1096,8 @@ async function handleApi(req, res, url) {
   let match;
 
   if (method === 'GET' && pathname === '/api/health') {
-    return json(res, 200, { ok: true, database: 'SQLite', time: now() });
+    if (databaseConfig.remote) db.prepare('SELECT 1').get();
+    return json(res, 200, { ok: true, database: databaseConfig.remote ? 'Turso/libSQL' : 'SQLite', time: now() });
   }
 
   // Diagnóstico para o admin, política de fotos e estatísticas.
@@ -3018,7 +3027,7 @@ server.listen(PORT, HOST, () => {
   } catch {
     /* sem interfaces de rede: apenas não exibe o endereço da rede local */
   }
-  console.log(`Banco SQLite: ${DB_PATH}`);
+  console.log(databaseConfig.remote ? 'Banco remoto Turso/libSQL conectado; dados fora do Render.' : `Banco SQLite: ${DB_PATH}`);
   if (bootstrapCredentials) {
     console.log('Contas iniciais criadas. Guarde estes dados agora:');
     console.log(

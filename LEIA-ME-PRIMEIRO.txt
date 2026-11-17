@@ -1,10 +1,11 @@
-POTYPET — PACOTE GITHUB / RENDER FREE
+POTYPET — PUBLICAR SEM PAGAR
 
-Leia README.md antes de publicar.
+1. Leia docs/guias/RENDER-GRATUITO.md.
+2. Envie os arquivos extraídos deste pacote ao GitHub, na raiz do repositório do site.
+3. Use Render Free + Turso Free + Google Apps Script para e-mail, conforme o guia.
+4. Configure as senhas e tokens somente nos painéis. Não há credenciais neste pacote.
+5. Confirme o e-mail de Maria, reinicie o serviço e aprove os anúncios pelo painel.
 
-Extraia o ZIP e envie os arquivos extraídos à raiz do repositório.
-No Render, use Blueprint para aplicar render.yaml ou configure Web Service conforme o README.
-
-Este pacote usa demonstração temporária no plano Free. Cadastros e fotos podem ser perdidos após suspensão, reinício ou atualização. Use somente dados fictícios. Não há envio real de e-mail.
-
-Nenhum serviço foi publicado por esta preparação.
+Não é preciso contratar disco ou plano pago. Os serviços gratuitos têm cotas.
+Os dados ficam no banco Turso; a pasta temporária do Render não guarda o banco.
+A implantação real e a entrega de e-mail precisam ser conferidas com suas contas.
