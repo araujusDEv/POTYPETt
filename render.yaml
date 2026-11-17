@@ -26,7 +26,7 @@ services:
       - key: EMAIL_TRANSPORT
         value: gmail_http
       - key: MAIL_FROM
-        sync: false
+        value: potypett@gmail.com
       - key: MAIL_QUEUE_KEY
         sync: false
       - key: MAIL_HTTP_URL
@@ -50,10 +50,10 @@ services:
       - key: USUARIO_SENHA
         sync: false
       - key: ADMIN_EMAIL
-        sync: false
+        value: potypett@gmail.com
       - key: ADMIN_PASSWORD
         sync: false
       - key: DONOR_EMAIL
-        value: hypestoreoofc@gmai.com
+        value: ongpotypet@gmail.com
       - key: DONOR_PASSWORD
         sync: false

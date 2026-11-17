@@ -4,6 +4,8 @@ Este pacote foi adaptado para **Render Free + Turso Free + e-mail Google por HTT
 
 **Comece por [RENDER-GRATUITO.md](docs/guias/RENDER-GRATUITO.md).** Ele explica como atualizar o mesmo repositório no GitHub, criar o banco, preparar o e-mail e corrigir o erro de `/var/data/appet` sem contratar disco.
 
+Contas atualizadas em 17/11/2026: administrador e remetente `potypett@gmail.com`, ONG `ongpotypet@gmail.com` e usuário comum `hypestoreoofc@gmail.com`. Defina as senhas somente no Render; `DONOR_PASSWORD` e `USUARIO_SENHA` exigem de 12 a 128 caracteres, letras e números. No serviço existente, atualize `DONOR_EMAIL` em Environment. A mudança não renomeia contas que já existam no banco.
+
 ## Publicação
 
 1. Envie os arquivos extraídos para a raiz do repositório conectado ao Render; inclua `conteudo-inicial/`, `lib/`, `scripts/` e `integracoes/`.
