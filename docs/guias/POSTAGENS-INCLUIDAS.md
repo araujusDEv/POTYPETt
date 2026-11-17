@@ -1,5 +1,7 @@
 # Publicar com as postagens incluídas
 
+**No Render gratuito, comece por [RENDER-GRATUITO.md](RENDER-GRATUITO.md).** Este pacote já aceita Turso e e-mail por HTTPS, sem disco pago. As instruções de cadastro abaixo continuam válidas.
+
 Os textos e as nove fotos agora acompanham o código em `conteudo-inicial/`. Essa pasta deve ir ao GitHub junto com o site. As senhas continuam somente nas variáveis do ambiente. O arquivo `fotos-cadastro/dados.json` não contém senhas; a pasta `fotos-cadastro/` continua ignorada pelo Git e é preparada automaticamente na hospedagem.
 
 ## No Render
@@ -22,10 +24,10 @@ O cadastro consulta os itens existentes a cada início, sem duplicá-los, e resp
 
 Para interromper futuras importações, defina `CADASTRO_INICIAL=0`. A retirada dos cadastros já existentes continua sendo feita pelos painéis, conforme o [guia do cadastro](CADASTRO-INICIAL.md).
 
-## A pasta do banco continua necessária
+## Armazenamento no plano gratuito
 
-Essa mudança inclui as postagens e automatiza o cadastro. O servidor continua usando SQLite para as contas, aprovações, solicitações e demais operações.
+Com `DATABASE_DRIVER=turso`, contas, fotos, aprovações, campanhas e históricos ficam no banco externo. A pasta local é apenas temporária; não é necessário montar `/var/data`.
 
-O erro `EACCES: permission denied, mkdir '/var/data/appet'` acontece antes de o servidor abrir a API. A carga automática só começa depois que o servidor inicia; portanto, não corrige esse erro nem desliga as verificações de armazenamento ou de produção. Com disco montado em `/var/data`, o caminho do banco pode ser configurado como `DATA_DIR=/var/data/appet` e `PERSISTENT_DISK_PATH=/var/data`. O plano Free não disponibiliza disco persistente.
+O erro `EACCES: permission denied, mkdir '/var/data/appet'` veio da configuração anterior de SQLite local sem disco montado. O caminho gratuito está no novo guia. Se optar por `DATABASE_DRIVER=sqlite`, o modo de produção continua exigindo armazenamento persistente fora do código e de pastas temporárias.
 
-`server.js` e todos os arquivos de `lib/` permanecem idênticos ao ZIP original. Nenhum dado foi aprovado automaticamente, nenhuma credencial foi embutida e o transporte de e-mail e os controles de segurança da instalação foram preservados.
+O servidor foi adaptado para esses provedores após sua autorização. Nenhum dado foi aprovado automaticamente ou credencial embutida. Confirmação de e-mail, validações, sessões e análise administrativa continuam obrigatórias.

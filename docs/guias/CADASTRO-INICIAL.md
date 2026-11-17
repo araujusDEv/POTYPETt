@@ -4,11 +4,13 @@
 
 O script `scripts/cadastro-inicial.cjs` lê `fotos-cadastro/dados.json` e as nove fotos dessa pasta. A pasta está no `.gitignore`. O pacote inclui os dados fornecidos e cópias preparadas das fotos, sem senhas. Não envie essa pasta ao repositório ao carregar arquivos manualmente pelo navegador: nesse caso o Git não aplica o `.gitignore`.
 
-`server.js`, todos os arquivos de `lib/` e suas regras permanecem idênticos ao ZIP recebido. O script não abre SQLite, não importa funções internas do servidor, não entra como administrador e não aprova registros. Todas as alterações passam pelo `fetch` do Node e pelos cookies de sessão da API existente.
+O importador não abre o banco, não importa funções internas do servidor, não entra como administrador e não aprova registros. Todas as alterações passam pelo `fetch` do Node e pelos cookies de sessão da API. O servidor foi posteriormente adaptado, com sua autorização, para Turso e e-mail por HTTPS; no Render Free siga [RENDER-GRATUITO.md](RENDER-GRATUITO.md).
 
 ## Preparação e execução
 
 Use Node.js **24.21.0**, a versão fixada em `.node-version`, e execute `npm ci` na pasta extraída. Inicie o site normalmente com `npm start`, em outro terminal, com a configuração habitual do banco, SMTP e das contas existentes. Nenhuma configuração de segurança precisa ser desativada.
+
+Se executar manualmente em uma extração nova, prepare primeiro a pasta ignorada pelo Git: `node -e "require('./scripts/iniciar.cjs').prepareInputs()"`. O início automático com `CADASTRO_INICIAL=1` já faz essa preparação.
 
 O script precisa de apenas estas variáveis:
 
