@@ -4,20 +4,20 @@ const nodemailer = require('nodemailer'),
   { settings } = require('../lib/mail-service.cjs');
 (async () => {
   const config = settings(process.env);
-  if (config.mode !== 'smtp')
-    throw Error('Configure EMAIL_TRANSPORT=smtp e as variáveis descritas em docs/guias/PUBLICAR-HOJE.md.');
-  const transport = nodemailer.createTransport(config.smtp);
+  if (!['smtp', 'gmail_http'].includes(config.mode))
+    throw Error('Configure EMAIL_TRANSPORT=smtp ou gmail_http.');
+  const transport = config.mode === 'gmail_http' ? require('../lib/gmail-http.cjs')(config) : nodemailer.createTransport(config.smtp);
   try {
     await transport.verify();
     console.log(
-      'Conexão, TLS e autenticação SMTP verificados. O remetente e a entrega precisam ser conferidos com um cadastro real. Nenhuma mensagem foi enviada por este comando.',
+      'Conexão e autenticação de e-mail verificadas. Confira a entrega com um cadastro real. Nenhuma mensagem foi enviada por este comando.',
     );
   } finally {
     transport.close();
   }
 })().catch(() => {
   console.error(
-    'Não foi possível verificar o SMTP. Confira servidor, porta, usuário, senha de app e acesso de saída da hospedagem. Credenciais não são exibidas.',
+    'Não foi possível verificar o e-mail. Confira o transporte e as variáveis no guia. Credenciais não são exibidas.',
   );
   process.exitCode = 1;
 });

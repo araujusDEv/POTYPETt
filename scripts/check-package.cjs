@@ -28,7 +28,7 @@ function walk(directory) {
       issues.push({ path: relative, reason: 'dado operacional ou segredo fora do pacote' });
       continue;
     }
-    if (!/\.(?:js|cjs|json|ya?ml|md|txt|html|conf|example|bat|sh)$/.test(entry.name)) continue;
+    if (!/\.(?:js|cjs|gs|json|ya?ml|md|txt|html|conf|example|bat|sh)$/.test(entry.name)) continue;
     const body = fs.readFileSync(file, 'utf8');
     if (
       /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|\bAKIA[A-Z0-9]{16}\b|\bgh[pousr]_[A-Za-z0-9]{36,255}\b/.test(

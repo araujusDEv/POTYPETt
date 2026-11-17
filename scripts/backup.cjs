@@ -12,10 +12,14 @@ const destination = path.resolve(target);
 if (fs.existsSync(destination))
   throw Error('O destino já existe; escolha outro nome para preservar o backup anterior.');
 fs.mkdirSync(path.dirname(destination), { recursive: true });
-const db = new DatabaseSync(path.join(directory, 'adotapet.db'), { readOnly: true });
+const database = require('../lib/database.cjs'), config = database.settings();
+const db = config.remote ? database.openDatabase('', config) : new DatabaseSync(path.join(directory, 'adotapet.db'), { readOnly: true });
 try {
-  db.exec('PRAGMA busy_timeout = 1500');
-  db.prepare('VACUUM INTO ?').run(destination);
+  if (config.remote) db.exportSnapshot(destination);
+  else {
+    db.exec('PRAGMA busy_timeout = 1500');
+    db.prepare('VACUUM INTO ?').run(destination);
+  }
   const check = new DatabaseSync(destination, { readOnly: true });
   try {
     if (check.prepare('PRAGMA integrity_check').get().integrity_check !== 'ok')
