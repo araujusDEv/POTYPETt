@@ -1,5 +1,7 @@
 # PotyPet — GitHub e Render gratuito
 
+Para publicar com as postagens e fotos já incluídas e cadastrar automaticamente ao iniciar, siga [docs/guias/POSTAGENS-INCLUIDAS.md](docs/guias/POSTAGENS-INCLUIDAS.md). O cadastro mantém as aprovações pelo painel e as exigências de armazenamento e segurança do servidor.
+
 Este pacote contém a aplicação original PotyPet 4.7.0, em Node.js e SQLite. A identidade visual, as páginas, as rotas e as regras do sistema foram preservadas. A configuração padrão deste pacote é uma **demonstração no Render Free**, sem disco pago e sem anúncios de exemplo importados.
 
 **O armazenamento é temporário.** Novas contas, anúncios, fotos, solicitações e demais alterações podem ser perdidos quando o Render suspender, reiniciar ou atualizar o serviço. Use somente dados fictícios. O pacote não contém banco operacional, senhas reais, backups ou exportação do site antigo. Publicar este código não transfere os dados de outra hospedagem.
