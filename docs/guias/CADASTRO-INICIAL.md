@@ -1,5 +1,7 @@
 # Cadastro inicial por HTTP
 
+**Atualização:** as postagens agora acompanham o código em `conteudo-inicial/` e podem ser cadastradas automaticamente por `npm start`, com `CADASTRO_INICIAL=1`. Para esse caminho, siga [Publicar com as postagens incluídas](POSTAGENS-INCLUIDAS.md). Os comandos manuais abaixo continuam disponíveis.
+
 O script `scripts/cadastro-inicial.cjs` lê `fotos-cadastro/dados.json` e as nove fotos dessa pasta. A pasta está no `.gitignore`. O pacote inclui os dados fornecidos e cópias preparadas das fotos, sem senhas. Não envie essa pasta ao repositório ao carregar arquivos manualmente pelo navegador: nesse caso o Git não aplica o `.gitignore`.
 
 `server.js`, todos os arquivos de `lib/` e suas regras permanecem idênticos ao ZIP recebido. O script não abre SQLite, não importa funções internas do servidor, não entra como administrador e não aprova registros. Todas as alterações passam pelo `fetch` do Node e pelos cookies de sessão da API existente.
@@ -60,7 +62,7 @@ Uma campanha ainda em rascunho, com o conteúdo esperado, pode ser retomada depo
 
 Execute uma instância por vez. Há um bloqueio local em `fotos-cadastro/.cadastro.lock` para impedir duas execuções concorrentes da mesma pasta. Ele é removido ao encerrar; não é um marcador de conclusão. O script não faz tentativas repetidas de escrita. São apenas cinco criações de anúncios, abaixo do limite de 30 por 10 minutos; se a API retornar `429`, ele para e informa quando tentar novamente, quando esse prazo estiver disponível.
 
-Não há recibo externo que impeça o cadastro em um banco recriado. Depois que o site reiniciar com o novo banco e as contas esperadas, execute o mesmo comando: ele consulta o novo banco pela API e refaz os itens ausentes. `npm start` e a inicialização do servidor não foram alterados. Para executar em todo início da hospedagem, configure esse comando como uma etapa posterior à disponibilidade da API, preservando a pasta de entrada e as variáveis. Desative essa etapa quando quiser retirar os itens definitivamente.
+Não há recibo externo que impeça o cadastro em um banco recriado. O comando manual pode ser repetido e, com `CADASTRO_INICIAL=1`, `npm start` agora executa a mesma carga automaticamente depois de abrir a API. A pasta `conteudo-inicial/` fornece os arquivos que estiverem ausentes em `fotos-cadastro/`, sem sobrescrever correções locais. As variáveis de senha continuam obrigatórias. Defina `CADASTRO_INICIAL=0` quando quiser desativar novas importações.
 
 ## Conferir na interface
 
