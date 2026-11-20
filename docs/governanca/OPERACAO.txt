@@ -1,0 +1,65 @@
+POTYPET — OPERAÇÃO E ATENDIMENTO
+Versão: 2026-11-19-potypet-operacao-1
+
+Responsável público: Equipe PotyPet.
+Canal: potypett@gmail.com e formulário de contato do site.
+Rotina: segunda a quinta-feira, sem horário fixo. Os dias de atendimento não
+suspendem prazos legais. O formulário não é plantão de emergência veterinária.
+O crédito acadêmico da escola e o cadastro de ONG não lhes atribuem a operação.
+
+ATRIBUIÇÕES DA EQUIPE
+Decidir finalidades e acessos aos dados; analisar direitos e incidentes; moderar
+anúncios, campanhas e contestações; verificar falhas, atualizações e backups.
+Registrar privadamente os integrantes autorizados e a atribuição das tarefas,
+incluindo substituição. O nome coletivo no site não substitui essa organização.
+Usar contas individuais, revisar acessos mensalmente e não compartilhar senhas.
+
+EM CADA DIA DE ATENDIMENTO
+1. Abrir caixa oficial e fila administrativa. Registrar protocolo, ciência,
+   prazo aplicável e encaminhamento. Priorizar exposição de dados e risco.
+2. Conferir Render/Turso, diagnóstico do admin e fila de e-mail. Distinguir
+   enfileiramento, aceitação pelo transporte e recebimento na caixa postal.
+3. No GitHub Actions, conferir a execução mais recente: exportar E restaurar
+   devem terminar com sucesso. Apurar falha ou ausência de execução.
+4. Conferir consumo/cotas dos provedores. Registrar verificações em área privada,
+   fora do repositório e sem dados excessivos. O backup continua programado de
+   sexta a domingo; não há leitura humana contínua garantida. Prazos legais
+   exigem organização específica da equipe quando ultrapassarem essa rotina.
+
+MENSALMENTE, NO PRIMEIRO DIA DE ATENDIMENTO DO MÊS
+- Revisar permissões, dependências e versões. Executar npm audit, avaliar avisos,
+  atualizar em cópia isolada e executar npm test e check:package antes de publicar.
+  Não aplicar correção forçada sem revisão.
+- Revisar retenção conforme RETENCAO.txt. Relatório de candidatos não é eliminação.
+- Ensaiar recuperação operacional, conferir registros, fotos, vínculos e acessos.
+  Reaplicar exclusões/revogações antes de disponibilizar dados restaurados.
+- Conferir condições, regiões, acessos e mecanismos de transferência dos provedores.
+  Essas configurações dependem das contas e não foram certificadas pelo código.
+
+PEDIDOS SOBRE DADOS
+1. Receber por contato ou e-mail; registrar protocolo, ciência e tipo do pedido.
+2. Antes de divulgar/excluir dados privados, confirmar vínculo pelo e-mail da
+   conta ou canal autenticado. No e-mail, enviar confirmação ao endereço que
+   já consta no cadastro e aguardar retorno com o protocolo; não confiar apenas
+   no nome/remetente de uma mensagem recebida. Se preciso, pedir confirmação proporcional.
+   Não pedir senha, token ou documento integral como rotina. Não revelar contas
+   de terceiros a quem não demonstrou legitimidade.
+3. Localizar dados e relações, restringir dados de terceiros e registrar eventual
+   fundamento de conservação parcial. Não fornecer hashes, segredos ou credenciais.
+4. Confirmação/acesso simplificado: imediato quando possível. Declaração completa
+   de confirmação/acesso: até 15 dias, art. 19 da LGPD. Não aplicar esse prazo
+   indistintamente a qualquer direito; observar requisitos/prazos específicos.
+5. Responder em canal privado. Registrar data, decisão e resposta antes de marcar
+   resolvido. O botão de resolver não comprova uma resposta enviada.
+6. Exclusão exige analisar vínculos e ensaiar manutenção em cópia isolada antes
+   da mudança autorizada. Arquivar não equivale a excluir. Não fazer DELETE
+   direto em produção sem revisão de integridade e plano de recuperação.
+7. Manter controle privado separado dos backups rotativos com exclusões e
+   revogações validadas: só identificador mínimo, ação e data necessários.
+   Reaplicar esse controle antes de reabrir uma cópia restaurada.
+
+Incidentes: seguir INCIDENTES.txt. Não aguardar o próximo dia de atendimento
+se isso comprometer contenção, evidência ou prazo aplicável.
+Os procedimentos exigem execução real pela equipe. O painel do site não consulta
+execuções do GitHub. Não houve contratação, nomeação de pessoa física ou envio
+de comunicações a terceiros nesta atualização.

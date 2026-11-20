@@ -470,19 +470,27 @@ App.ready(() => {
               : 'Gravação não conferida.',
           ],
           [
-            'Cópias de segurança',
+            'Backup pelo servidor',
             state.backup.enabled
               ? state.backup.pending
                 ? 'Há uma pendência de cópia ou exportação.'
                 : 'Rotina habilitada; confira o último backup e ensaie restauração.'
-              : 'Rotina desativada.',
+              : 'Rotina local desativada. Consulte também a rotina externa pelo GitHub Actions.',
           ],
           [
-            'Cópia externa',
+            'Exportação pelo servidor',
             state.backup.latestExported
               ? 'Envio registrado; recuperação no serviço externo ainda precisa de ensaio.'
               : 'Nenhum envio externo confirmado pela rotina.',
           ],
+          [
+            'Backup pelo GitHub Actions',
+            state.governance?.backup.strategy === 'github_actions'
+              ? 'Procedimento diário cifrado preparado. Confira no GitHub a ativação, exportação e restauração; este painel não consulta execuções externas.'
+              : 'Procedimento externo não informado.',
+          ],
+          ['Operação e atendimento', (state.governance?.operator || 'Equipe PotyPet') + ': ' +
+            (state.governance?.serviceDays || 'consulte Atendimento') + '. Prazos legais permanecem aplicáveis.'],
           [
             'IP dos visitantes',
             state.proxy.mode === 'socket_only'

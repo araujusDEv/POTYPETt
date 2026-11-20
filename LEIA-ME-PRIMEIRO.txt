@@ -1,4 +1,8 @@
-ATUALIZAÇÃO MAIS RECENTE: leia ATUALIZAR-ACESSO.txt. Este pacote inclui também a análise guiada e a foto do login.
+ATUALIZACAO MAIS RECENTE: leia ATUALIZAR-GOVERNANCA.txt. Inclui equipe/canal/dias,
+retencao, procedimentos de atendimento e incidentes e backup cifrado no GitHub
+Actions preparado (ativacao externa necessaria). As melhorias anteriores continuam.
+
+ATUALIZAÇÃO ANTERIOR: leia ATUALIZAR-ACESSO.txt. Este pacote inclui também a análise guiada e a foto do login.
 
 ATUALIZAÇÃO DE INTERFACE: leia ATUALIZAR-INTERFACE.txt antes de enviar os arquivos para o repositório.
 

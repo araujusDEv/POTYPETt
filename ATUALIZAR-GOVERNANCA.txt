@@ -1,0 +1,23 @@
+POTYPET — ATUALIZAÇÃO DE GOVERNANÇA E BACKUP — 19/11/2026
+
+1. Extraia este pacote e envie seu conteúdo completo à raiz do MESMO repositório
+   conectado ao Render. Inclua .github/workflows/backup.yml, lib/, scripts/, js/,
+   css/, páginas e docs/. Não envie apenas o ZIP como arquivo do site.
+2. Preserve variáveis do Render e banco Turso. Não recrie contas, não execute
+   nova carga de exemplos e não substitua o banco por um vazio.
+3. No Render, use Manual Deploy > Deploy latest commit se a atualização não
+   começar automaticamente (o modelo render.yaml deixa autoDeploy desativado).
+   Aguarde o deploy e abra termos, privacidade e atendimento: Equipe PotyPet,
+   segunda a quinta e versão 2026-11-19-potypet-operacao-1.
+4. Em conta antiga, o aviso não registra aceite sozinho. O novo registro exige
+   marcar a caixa e confirmar, preservando o aceite original.
+5. Configure o backup conforme docs/governanca/BACKUP-GITHUB.txt. Enviar arquivos
+   ao GitHub NÃO ativa a agenda nem comprova restauração no serviço externo.
+6. Execute a rotina em docs/governanca/OPERACAO.txt. Os períodos de retenção
+   são critérios internos documentados, com análise mensal. Esta atualização
+   não apaga registros de usuários.
+
+O pacote mantém a análise guiada de campanhas, imagem local do login e a
+distinção entre recuperar senha e reenviar confirmação de cadastro.
+Não publique .env, bancos, backups, chaves ou senhas. Segredos são configurados
+somente nos provedores; cópias reais não estão neste pacote.

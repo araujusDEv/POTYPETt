@@ -45,7 +45,8 @@ check('PotyPet em todas as paginas e arquivos publicos', async () => {
       );
     }
     const wordmarks = [...html.matchAll(/<span class="brand-word">([\s\S]*?)<\/span><\/a>/g)];
-    if (!html.includes('class="auth-page"') && !wordmarks.length) {
+    const authPage = /<body\b[^>]*class="[^"]*\bauth-page\b/.test(html);
+    if (!authPage && !wordmarks.length) {
       assert.match(
         html,
         /<header class="navbar"><\/header>/,

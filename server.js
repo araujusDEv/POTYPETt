@@ -137,7 +137,9 @@ ensureUserColumn('account_suspended_at', 'TEXT');
 ensureUserColumn('account_suspended_by', 'INTEGER');
 ensureUserColumn('account_suspension_reason', "TEXT NOT NULL DEFAULT ''");
 ensureUserColumn('account_moderation_history', "TEXT NOT NULL DEFAULT '[]'");
-const POLICY_VERSION = '2026-10-13-potypet-rc6-revisao';
+const governance = require('./lib/governance.cjs');
+const POLICY_VERSION = governance.version;
+const policyAcceptance = require('./lib/policy-acceptance.cjs')({ db, version: POLICY_VERSION });
 db.exec(
   `CREATE INDEX IF NOT EXISTS idx_users_account_approval ON users(account_type, approval_status);`,
 );
@@ -1028,7 +1030,7 @@ function createRegisteredUser(profile, credentials, verified = false) {
   const id = Number(result.lastInsertRowid);
   // A valid signup link issued before the rename retains the policy originally accepted.
   if (
-    [POLICY_VERSION, '2026-10-13-potypet-rc1', '2026-10-12-etapa5'].includes(
+    [POLICY_VERSION, '2026-10-13-potypet-rc6-revisao', '2026-10-13-potypet-rc1', '2026-10-12-etapa5'].includes(
       profile.termsVersion,
     ) &&
     profile.termsAcceptedAt
@@ -1108,6 +1110,7 @@ async function handleApi(req, res, url) {
     return json(res, 200, {
       email: mail.summary(),
       backup: backups.summary(),
+      governance: { operator: governance.operator, serviceDays: governance.serviceDays, backup: governance.backup },
       storage: storage.summary(),
       demonstration: demoAudit.report(),
       runtime: { version: process.versions.node, expected: '24.21.0', line: 24 },
@@ -1181,7 +1184,7 @@ async function handleApi(req, res, url) {
     }
     const token = createSession(user.id);
     setSessionCookie(res, token, validate.boolean(body.remember));
-    return json(res, 200, { user: publicUser(user, true) });
+    return json(res, 200, { user: publicUser(user, true), policy: policyAcceptance.status(user) });
   }
 
   if (method === 'POST' && pathname === '/api/auth/register') {
@@ -1348,7 +1351,14 @@ async function handleApi(req, res, url) {
     if (!user) return error(res, 401, 'Sessão inválida ou expirada.');
     if (accountType(user) === 'ong' && accountAccess.restricted(user) && !hasAccountHistory(user))
       return error(res, 403, 'O cadastro desta ONG ainda não está aprovado.');
-    return json(res, 200, { user: publicUser(user, true) });
+    return json(res, 200, { user: publicUser(user, true), policy: policyAcceptance.status(user) });
+  }
+
+  if (method === 'POST' && pathname === '/api/account/policy-acceptance') {
+    const body = await readBody(req);
+    const user = requireUser(req, res);
+    if (!user) return;
+    return json(res, 200, { policy: policyAcceptance.accept(user, body) });
   }
 
   if (method === 'POST' && pathname === '/api/auth/logout') {

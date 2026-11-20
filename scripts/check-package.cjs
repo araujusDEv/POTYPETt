@@ -14,7 +14,7 @@ function walk(directory) {
       continue;
     }
     if (entry.isDirectory()) {
-      if (/(^|\/)(backups|email-preview|derived-media|private-uploads|uploads)$/.test(relative))
+      if (/(^|\/)(backups|email-preview|derived-media|private-uploads|uploads|registros-operacionais-privados)$/.test(relative))
         issues.push({ path: relative, reason: 'dados privados/cache' });
       else walk(file);
       continue;

@@ -120,3 +120,13 @@ body.sidebar-collapsed .sidebar-footer [data-tooltip] { position:relative; }
 .alert p {color:inherit;}
 .gallery-thumb.active {border-color:var(--color-primary-dark);}
 #app-loading.alert-error .btn-outline {color:inherit;border-color:currentColor;}
+
+/* Documentos e aviso de atualização — 19/11/2026. */
+.policy-update-notice { margin-block:24px; padding:20px; border:1px solid var(--color-border); background:var(--color-surface); border-radius:12px; }
+.policy-update-notice .check-row { margin-block:16px; }
+.policy-update-notice p:last-child:empty { display:none; }
+.policy-document table { display:table; table-layout:fixed; white-space:normal; }
+.policy-document caption { text-align:left; font-weight:700; padding-block:12px; }
+.policy-document th:first-child { width:32%; }
+.policy-document td,.policy-document th { overflow-wrap:anywhere; vertical-align:top; }
+@media(max-width:600px) { .policy-document td,.policy-document th { padding:9px 7px; font-size:.82rem; } .policy-document th:first-child { width:36%; } }

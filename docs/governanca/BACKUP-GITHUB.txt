@@ -1,0 +1,69 @@
+POTYPET — BACKUP CIFRADO PELO GITHUB ACTIONS
+
+ESTADO: preparado; ativação e ensaio no repositório real ainda são necessários.
+Teste local não comprova upload em produção. Inclua .github/workflows/backup.yml
+ao atualizar o GitHub; a pasta .github pode ficar oculta no Explorador.
+
+COMPORTAMENTO
+Agenda diária: 06:17 UTC / 03:17 em Apodi (UTC-3). A plataforma pode atrasar ou
+não executar a agenda; isso não garante recuperação com perda máxima de 24h.
+Exporta Turso/libSQL, reconstruindo coleções grandes, fotos e anexos. Confere
+SQLite, relações e coleções; cifra em AES-256-GCM e verifica a decifração.
+Publica só .db.enc e manifesto sem dados pessoais, com expiração de 7 dias.
+Outro executor baixa o artefato, decifra e restaura em diretório novo. Esse job
+não recebe URL/token do banco ativo. O ensaio não modifica o banco de produção.
+
+REPOSITORIO INFORMADO
+https://github.com/araujusDEv/POTYPETt
+Segredos: https://github.com/araujusDEv/POTYPETt/settings/secrets/actions
+Variaveis: https://github.com/araujusDEv/POTYPETt/settings/variables/actions
+Execucoes: https://github.com/araujusDEv/POTYPETt/actions
+O acesso e as configuracoes atuais nao foram confirmados pela conexao desta entrega.
+
+CONFIGURAR SEM ENVIAR SEGREDOS NO CHAT
+1. Atualize o MESMO repositório conectado ao Render com o pacote completo,
+   incluindo .github. Use repositório privado e restrinja modificações dos
+   workflows e acesso a Actions a integrantes autorizados.
+2. Em Settings > Secrets and variables > Actions > Secrets, crie:
+   TURSO_DATABASE_URL: URL do banco já usada no Render.
+   TURSO_AUTH_TOKEN: token do banco com acesso necessário à exportação.
+   BACKUP_ENCRYPTION_KEY: 32 bytes aleatórios em base64, exclusiva para backup.
+   Com Node instalado, gere uma chave NOVA no seu computador (nao neste chat):
+   node -e "console.log(require('node:crypto').randomBytes(32).toString('base64'))"
+   Copie diretamente para o segredo e para um gerenciador privado; nao fotografe.
+   Gere a chave em ferramenta local confiável ou gerenciador e guarde outra
+   cópia privada fora do GitHub. Perdê-la impede recuperar os backups.
+   Não colocar valores no YAML, README, print, commit ou ZIP.
+3. Habilite Actions e confira minutos, espaço e cotas do plano. Não há promessa
+   de custo zero. Preserve em gerenciador privado também as configurações
+   essenciais do Render, inclusive a chave da fila de e-mail. A cópia do banco
+   não substitui o inventário seguro de segredos; não inclua esse inventário no Git.
+4. Em Actions, abra “Backup cifrado e restauração do PotyPet” > Run workflow.
+   Aguarde exportar E restaurar terminarem com sucesso. Confira resumo e artefato.
+   Registre privadamente link, data e resultado; não fotografe os segredos.
+5. Só após esse ensaio, em Variables, crie POTYPET_BACKUP_ENABLED com valor true
+   para permitir execuções agendadas na branch padrão. Confira a próxima execução.
+   Agendamento configurado não comprova tarefa executada. Em repositórios
+   públicos, agendas podem ser desativadas após inatividade; use privado.
+
+MANTER
+Equipe PotyPet confere de segunda a quinta: ausência/falha de execução, ambos
+os jobs, tamanho e cotas. Corrigir causa e repetir manualmente se necessário.
+Expiração não garante disponibilidade se conta, artefato ou chave forem apagados.
+A independência é em relação ao Render/Turso; não é cópia imutável contra quem
+compromete a conta GitHub. O painel do site não consulta os jobs externos.
+
+RECUPERAÇÃO REAL
+Baixe o artefato em ambiente privado e valide com scripts/verify-backup-ci.cjs.
+O comando remove a cópia aberta temporária ao fim. Para preparar manutenção,
+use backup:decrypt em arquivo novo e restore:check em diretório vazio.
+Nunca aponte o ensaio ao banco ativo. A cópia é SQLite: recuperação para Turso
+exige importação controlada para NOVO banco e configuração/validação separadas.
+Conferir contas, fotos, vínculos, termos e acessos. Reaplicar exclusões,
+revogações e restrições e invalidar sessões antes de reabrir o serviço.
+O ensaio de integridade não substitui validação funcional completa da aplicação.
+
+FONTES
+https://docs.github.com/en/actions/managing-workflow-runs/downloading-workflow-artifacts
+https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
+https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository

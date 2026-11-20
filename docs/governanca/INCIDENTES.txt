@@ -1,0 +1,41 @@
+POTYPET — RESPOSTA A INCIDENTES
+Responsável: Equipe PotyPet. Canal: potypett@gmail.com.
+
+1. Registrar data/hora da ciência, origem, sistema e hipótese. Distinguir suspeita
+   e confirmação. Preservar logs necessários com acesso restrito; não copiar
+   todo o banco para documentar um incidente.
+2. Conter proporcionalmente: restringir recurso, revogar sessão ou credencial
+   comprometida pela conta autorizada do provedor, impedir nova exposição.
+   Registrar ações; não apagar evidências e históricos por reflexo.
+3. Avaliar natureza/categorias dos dados, titulares, extensão, período, proteções
+   e consequências. Determinar se há risco ou dano relevante.
+4. A equipe registra e decide comunicação à ANPD e aos titulares quando exigida.
+   Prazo geral: 3 dias úteis da ciência de que o incidente afetou dados pessoais,
+   observadas regras/exceções do regulamento. Não presumir pequeno porte ou
+   extensão sem fundamento. Avaliar comunicação preliminar sem esperar concluir
+   toda a investigação. Os dias de atendimento não suspendem esse dever.
+5. Comunicar fatos, riscos, medidas e canal apropriado; guardar comprovação e
+   complementações. Este procedimento não envia comunicações automaticamente.
+6. Corrigir em cópia isolada, verificar causa e testar antes de reabrir o recurso.
+   Restaurar em destino novo, preservando banco ativo. Reaplicar exclusões,
+   revogações e restrições; invalidar sessões recuperadas. Avaliar troca de
+   chaves expostas por responsável autorizado.
+7. Registrar conclusão, causa, impacto, resposta e prevenção. Manter registro
+   restrito por pelo menos 5 anos, inclusive se a decisão fundamentada for não
+   comunicar. Não conservar dados excessivos dentro do registro.
+
+MODELO — PREENCHER FORA DO GIT EM ÁREA PRIVADA
+Identificador / data-hora da ciência e registro:
+Responsável interno / substituto:
+Origem / sistema afetado / fatos e hipóteses:
+Categorias / volume aproximado / titulares:
+Risco / decisão de comunicar / fundamento / prazos:
+Contenção / evidências / correção:
+Comunicações / comprovações, sem credenciais:
+Recuperação / reaplicação de exclusões e revogações:
+Encerramento / prevenção / próxima revisão:
+
+FONTES OFICIAIS — consulta em 19/11/2026; conferir alterações na execução
+https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis
+https://www.gov.br/anpd/pt-br/assuntos/noticias/anpd-aprova-o-regulamento-de-comunicacao-de-incidente-de-seguranca
+https://planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm

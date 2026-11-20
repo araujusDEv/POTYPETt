@@ -105,6 +105,50 @@ const App = {
         throw err;
       }
   },
+  showPolicyNotice() {
+    const user = Auth.getCurrentUser(), policy = this.data.session?.policy;
+    if (!user || user.historicalAccess || !policy || policy.accepted ||
+        document.body?.classList?.contains('auth-page')) return;
+    const main = document.querySelector('main');
+    if (!main || document.getElementById('policy-update-notice')) return;
+    const notice = document.createElement('section');
+    notice.id = 'policy-update-notice';
+    notice.className = 'container alert policy-update-notice';
+    notice.setAttribute('aria-label', 'Atualização dos documentos');
+    notice.innerHTML = '<h2 style="font-size:1.1rem">Termos e privacidade atualizados</h2>' +
+      '<p>A Equipe PotyPet definiu atendimento, conservação de dados e procedimentos de segurança. ' +
+      'Leia os <a href="termos.html" target="_blank" rel="noopener">termos</a> e a ' +
+      '<a href="privacidade.html" target="_blank" rel="noopener">privacidade</a>. ' +
+      'Seu aceite anterior permanece registrado. Entrar na conta não registra novo aceite.</p>' +
+      '<label class="check-row"><input type="checkbox" id="policy-update-confirm">' +
+      '<span>Li os documentos atualizados e aceito esta versão.</span></label>' +
+      '<button type="button" class="btn btn-primary" id="policy-update-save" disabled>Registrar meu aceite</button>' +
+      '<p id="policy-update-status" role="status" aria-live="polite"></p>';
+    main.prepend(notice);
+    const confirm = notice.querySelector('#policy-update-confirm'),
+      save = notice.querySelector('#policy-update-save'),
+      status = notice.querySelector('#policy-update-status');
+    confirm.addEventListener('change', () => { save.disabled = !confirm.checked; });
+    save.addEventListener('click', async () => {
+      if (!confirm.checked || save.disabled) return;
+      save.disabled = true;
+      confirm.disabled = true;
+      status.textContent = 'Registrando…';
+      try {
+        const result = await apiRequestAsync('POST', '/api/account/policy-acceptance', {
+          version: policy.version, accepted: true,
+        });
+        this.data.session.policy = result.policy;
+        status.textContent = 'Aceite desta versão registrado. O registro anterior foi preservado.';
+        confirm.hidden = true;
+        save.hidden = true;
+      } catch (error) {
+        status.textContent = error.message || 'Não foi possível registrar. Tente novamente.';
+        confirm.disabled = false;
+        save.disabled = !confirm.checked;
+      }
+    });
+  },
   async start() {
     if (this.boot) return this.boot;
     const main = document.querySelector('main'),
@@ -147,6 +191,7 @@ const App = {
               )
               .forEach((el) => (el.disabled = true));
         }
+        this.showPolicyNotice();
         document.dispatchEvent(new Event('app:ready'));
       })
       .catch((err) => {

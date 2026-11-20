@@ -1,0 +1,47 @@
+POTYPET — RETENÇÃO, ELIMINAÇÃO E HISTÓRICO
+Versão: 2026-11-19-potypet-operacao-1. Responsável: Equipe PotyPet.
+
+São critérios internos de política, não prazos universais impostos pela LGPD.
+Necessidade, minimização e pedidos de titulares são avaliados durante todo o
+período. Esta atualização não apaga dados existentes automaticamente.
+
+CRITÉRIOS
+- Conta/perfil: enquanto necessário ao serviço solicitado. No encerramento
+  validado, remover/anonimizar dados sem necessidade e restringir o mínimo vinculado.
+- Anúncios, desaparecidos, campanhas, fotos e evidências: atividade + até 12 meses
+  do encerramento formal; evidência essencial segue só o histórico justificado.
+- Questionários, conversas, avistamentos e fotos de acompanhamento: até 12 meses
+  do encerramento do pedido/caso vinculado.
+- Histórico mínimo de adoção, termos, aceites e decisões: até 24 meses após
+  encerramento do vínculo/caso; só partes necessárias, datas, versão e decisão.
+  Não preservar o conteúdo privado inteiro sob o rótulo de histórico.
+- Atendimento/denúncias: até 12 meses da resolução; decisão mínima pode seguir
+  histórico de 24 meses quando necessária e fundamentada.
+- Auditoria administrativa: até 24 meses do registro, com dados mínimos da ação.
+- Incidentes: registro restrito por pelo menos 5 anos, conforme ANPD.
+- Backups cifrados: expiração de artefatos em 7 dias no GitHub Actions após ativação.
+- Links: confirmação 24h, recuperação 30min, uso único. Sessões até 7 dias.
+  Tokens expirados e registros técnicos encerrados seguem limpeza do serviço;
+  fila encerrada e controles de pedidos de e-mail usam janela técnica de 7 dias.
+
+REVISÃO MENSAL
+1. Inventariar categorias e relações. Arquivado/não público não significa excluído.
+2. Executar npm run retention:review -- COPIA_RESTAURADA.db em ambiente restrito. O script usa datas
+   explícitas; itens sem data confiável precisam de avaliação. Não inventa data
+   de fechamento a partir da criação ou da última edição.
+3. Conferir necessidade e impedimento específico. Controvérsia, obrigação legal
+   ou exercício regular de direitos podem justificar exceção do mínimo necessário.
+   Registrar fundamento, escopo, acesso e nova revisão, sem retenção indefinida
+   de todo o cadastro. Incidentes seguem prazo próprio.
+4. Registrar decisão privada: categoria/IDs, marco, fundamento, ação, executor,
+   conferência e data. Não publicar nomes, mensagens ou documentos.
+5. Ensaiar manutenção em cópia isolada: remover conteúdo desnecessário e preservar
+   integridade/vínculos mínimos. Só depois executar a mudança autorizada.
+6. Conferir APIs, anexos e caches. Retirar cartão ou expirar link não prova exclusão.
+7. Guardar controle privado separado de exclusões/revogações para reaplicação
+   após restauração. Não manter cópias pessoais indefinidas dos dados eliminados.
+
+O SCRIPT É SOMENTE LEITURA
+Lista candidatos de anúncios/casos, pedidos, campanhas, atendimentos e auditoria
+com marco explícito. Não cobre sozinho todos os anexos, consentimentos, registros
+SQL ou obrigações. Não existe expurgo geral automático nesta versão.

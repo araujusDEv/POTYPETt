@@ -1,5 +1,7 @@
 # PotyPet — Render gratuito com dados persistidos no Turso
 
+**Governança — 19/11/2026:** Equipe PotyPet, atendimento de segunda a quinta, critérios de conservação e novo aceite explícito. Backup cifrado pelo GitHub Actions preparado, com ativação externa ainda necessária. Leia `ATUALIZAR-GOVERNANCA.txt` e `docs/governanca/BACKUP-GITHUB.txt`.
+
 **Atualização do acesso — 19/11/2026:** recuperação de senha e confirmação de cadastro agora possuem títulos e instruções diferentes, com atalho para recuperar a senha e preservação do e-mail digitado. Leia `ATUALIZAR-ACESSO.txt`.
 
 **Atualização de interface — 19/11/2026:** análise de campanhas em três etapas, progresso das verificações, campos condicionais e foto local do login. Para atualizar a instalação existente, leia `ATUALIZAR-INTERFACE.txt`.
