@@ -9,3 +9,8 @@
 
 As imagens de compartilhamento usam /img/hero-adocao.jpg, no próprio endereço da instalação.
 
+
+## Imagem do login — 18/11/2026
+
+A imagem img/login-adocao.jpg foi criada com a ferramenta integrada de geração de imagens para esta tela. É uma imagem decorativa de um cão e um gato em um jardim; não representa um anúncio de adoção ou animais cadastrados. O arquivo está incluído no pacote e é servido pela própria aplicação.
+

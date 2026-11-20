@@ -17,25 +17,29 @@ document.querySelectorAll('[data-password-target]').forEach((button) =>
     input.focus();
   }),
 );
-document.getElementById('forgot-toggle').addEventListener('click', () => {
-  document.getElementById('forgot-email').value = document.getElementById('email').value;
-  document.getElementById('login-form').hidden = true;
-  document.getElementById('verify-form').hidden = true;
-  document.getElementById('forgot-form').hidden = false;
-  document.getElementById('forgot-email').focus();
-});
-document.getElementById('resend-toggle').addEventListener('click', () => {
-  document.getElementById('verify-email').value = document.getElementById('email').value;
-  document.getElementById('login-form').hidden = true;
-  document.getElementById('forgot-form').hidden = true;
-  document.getElementById('verify-form').hidden = false;
-  document.getElementById('verify-email').focus();
-});
-document.getElementById('verify-back').addEventListener('click', () => {
-  document.getElementById('verify-form').hidden = true;
-  document.getElementById('login-form').hidden = false;
-  document.getElementById('email').focus();
-});
+function openAuthPanel(panel) {
+  const forms = { login: 'login-form', recovery: 'forgot-form', verification: 'verify-form' };
+  const fields = { login: 'email', recovery: 'forgot-email', verification: 'verify-email' };
+  const previous = Object.keys(forms).find((key) => !document.getElementById(forms[key]).hidden) || 'login';
+  const address = document.getElementById(fields[previous]).value;
+  for (const [key, id] of Object.entries(forms)) document.getElementById(id).hidden = key !== panel;
+  document.getElementById(fields[panel]).value = address;
+  document.getElementById('auth-confirm-link').hidden = panel !== 'login';
+  const copy = {
+    login: ['Acesse sua conta', 'Entre para continuar cuidando de cada etapa da adoção.'],
+    recovery: ['Recuperar senha', 'Receba um link para escolher uma nova senha do PotyPet.'],
+    verification: ['Confirmar cadastro', 'Esta opção confirma o e-mail de um cadastro novo. Ela não troca sua senha.'],
+  };
+  document.getElementById('auth-title').textContent = copy[panel][0];
+  document.getElementById('auth-subtitle').textContent = copy[panel][1];
+  document.getElementById('alert-area').innerHTML = '';
+  document.getElementById(fields[panel]).focus();
+}
+document.getElementById('forgot-toggle').addEventListener('click', () => openAuthPanel('recovery'));
+document.getElementById('resend-toggle').addEventListener('click', () => openAuthPanel('verification'));
+document.getElementById('verify-back').addEventListener('click', () => openAuthPanel('login'));
+document.getElementById('verify-recover').addEventListener('click', () => openAuthPanel('recovery'));
+
 document.getElementById('verify-form').addEventListener(
   'submit',
   App.form(async (event) => {
@@ -52,11 +56,8 @@ document.getElementById('verify-form').addEventListener(
     }
   }),
 );
-document.getElementById('login-back').addEventListener('click', () => {
-  document.getElementById('forgot-form').hidden = true;
-  document.getElementById('login-form').hidden = false;
-  document.getElementById('email').focus();
-});
+document.getElementById('login-back').addEventListener('click', () => openAuthPanel('login'));
+
 document.getElementById('login-form').addEventListener(
   'submit',
   App.form(async (event) => {

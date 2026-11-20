@@ -1,0 +1,55 @@
+/* Imagem própria do acesso e dados de atendimento confirmados em 18/11/2026. */
+.auth-visual-login::before { display: none; }
+.auth-visual-login > .auth-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+  opacity: 1;
+  filter: none;
+  pointer-events: none;
+}
+.auth-visual-login::after {
+  background: linear-gradient(180deg, rgba(2, 35, 33, .2) 0%, rgba(2, 35, 33, .08) 40%, rgba(2, 35, 33, .82) 73%, rgba(2, 35, 33, .98) 100%);
+}
+.contact-layout { align-items: start; gap: clamp(28px, 4vw, 64px); padding-inline: 32px; }
+.contact-layout > div { min-width: 0; }
+.contact-layout h1 { font-size: clamp(2rem, 3.2vw, 3rem); }
+.contact-details { display: grid; gap: 12px; margin: 26px 0; }
+.contact-details > div { padding-left: 15px; border-left: 2px solid var(--color-border); }
+.contact-details dt { color: var(--color-ink-soft); font-size: .78rem; margin-bottom: 3px; }
+.contact-details dd { margin: 0; font-size: .94rem; font-weight: 650; line-height: 1.5; overflow-wrap: anywhere; }
+.contact-details a { color: var(--color-primary-dark); }
+.contact-note { font-size: .86rem; line-height: 1.6; color: var(--color-ink-soft); }
+.contact-links { font-size: .86rem; margin: 14px 0; }
+.contact-credit { font-size: .75rem; color: var(--color-ink-soft); line-height: 1.6; }
+.contact-form-card { position: sticky; top: 28px; }
+.contact-form-card .alert p:last-child { margin-bottom: 0; }
+[data-theme="dark"] .auth-page .auth-card a,
+[data-theme="dark"] .auth-page .auth-card .link-button,
+[data-theme="dark"] .auth-page .auth-card .password-toggle {
+  color: var(--color-primary-dark);
+}
+@media (max-width: 1100px) {
+  .contact-form-card { position: static; }
+}
+@media (max-width: 560px) {
+  .contact-layout { padding-inline: 24px; }
+}
+@media (max-width: 900px) {
+  .auth-visual-login { min-height: 260px; height: 260px; }
+  .auth-visual-login .auth-visual-content { min-height: 260px; }
+  .auth-visual-login > .auth-scene { object-position: center 27%; }
+  .auth-visual-login::after {
+    background: linear-gradient(180deg, rgba(2, 35, 33, .36), rgba(2, 35, 33, .05) 38%, rgba(2, 35, 33, .9) 100%);
+  }
+  .auth-visual-login .auth-quote h1 { font-size: clamp(1.55rem, 5.8vw, 2rem); line-height: 1.06; max-width: 320px; }
+}
+
+/* Camadas explícitas para a foto não ficar encoberta pelo painel de marca. */
+.login-photo-page .auth-visual-login { isolation: isolate; background: #063f3c; }
+.login-photo-page .auth-visual-login > .auth-scene { display: block; z-index: 0; }
+.login-photo-page .auth-visual-login::after { z-index: 1; pointer-events: none; }
+.login-photo-page .auth-visual-login .auth-visual-content { z-index: 2; }

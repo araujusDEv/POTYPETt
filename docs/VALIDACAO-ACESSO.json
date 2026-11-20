@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-19",
+  "status": "pass",
+  "tests": {
+    "tests/login-panels.cjs": "pass",
+    "tests/email-auth.cjs": "pass"
+  },
+  "automatedScope": "Fluxos isolados, sem envio de e-mail real.",
+  "realDelivery": "Usuário confirmou recebimento após usar Esqueci minha senha.",
+  "deploymentPerformed": false,
+  "fullNpmTestRun": false
+}

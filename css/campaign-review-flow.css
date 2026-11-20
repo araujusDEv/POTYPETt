@@ -1,0 +1,45 @@
+/* Etapas da análise de campanhas; campos e regras continuam validados no servidor. */
+.review-flow-steps { position: sticky; top: 0; z-index: 4; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 18px 0 24px; padding: 10px 0; background: var(--color-surface); }
+.review-flow-steps button { display: flex; align-items: center; gap: 10px; padding: 13px 12px; min-height: 64px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-bg-alt); color: var(--color-ink); font: inherit; font-size: .88rem; text-align: left; cursor: pointer; }
+.review-flow-steps button b { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 30px; border-radius: 50%; background: var(--color-surface); }
+.review-flow-steps .is-current { border-color: var(--color-primary); box-shadow: inset 0 -3px var(--color-primary); font-weight: 750; }
+.review-flow-steps .is-current b { background: var(--color-primary); color: white; }
+.review-dialog [hidden], .review-flow-actions [hidden] { display: none !important; }
+[data-review-pane] > h3 { margin: 8px 0 10px; font-size: 1.18rem; }
+.review-flow-actions { position: sticky; bottom: 0; z-index: 3; display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 24px; padding: 18px 0; background: var(--color-surface); border-top: 1px solid var(--color-border); box-shadow: 0 -8px 16px var(--color-surface); }
+#review-step-position { color: var(--color-ink-soft); font-size: .85rem; }
+.review-progress { border: 1px solid var(--color-border); padding: 18px; border-radius: 14px; margin: 14px 0; background: var(--color-bg-alt); }
+.review-progress p, .review-field-hint { font-size: .87rem; line-height: 1.6; color: var(--color-ink-soft); }
+.review-progress > .btn { margin-top: 16px; }
+#review-flow #review-checks > h3 { display: none; }
+.review-check-editor > summary { padding: 14px 0; font-weight: 650; cursor: pointer; }
+.review-requirements { list-style: none; padding: 0; margin: 16px 0 0; }
+.review-requirements li { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--color-border); }
+.review-check-state { flex-shrink: 0; font-size: .76rem; font-weight: 650; padding: 5px 9px; border-radius: 7px; }
+.review-check-state.is-complete { background: #d5f2e5; color: #145543; }
+.review-check-state.is-pending { background: #fff0c9; color: #664712; }
+.review-save-hint { padding: 11px 14px; border-left: 3px solid var(--color-primary); background: var(--color-bg-alt); font-size: .87rem; }
+.review-save-notice { margin: 14px 0; padding: 14px 16px; border: 1px solid #72b29a; background: #e8f7ef; color: #145543; border-radius: 12px; line-height: 1.6; }
+.review-history { margin: 20px 0; padding: 16px; border: 1px solid var(--color-border); border-radius: 12px; }
+.review-history > summary, #review-private-section > summary { cursor: pointer; font-weight: 650; line-height: 1.5; }
+.review-history > summary { padding: 3px 0; }
+#review-private-section { margin: 16px 0; }
+#review-private-section[open] > summary { margin-bottom: 12px; }
+.review-decision-pending { padding: 14px; margin: 14px 0; border: 1px solid #d5b45d; border-radius: 12px; background: var(--color-bg-alt); }
+.review-decision-pending p { margin: 0 0 12px; font-size: .87rem; }
+.review-decision-pending p:last-child { margin: 12px 0 0; }
+#decision-form > div { margin: 16px 0; }
+#check-form label:not(.check-label), #decision-form label:not(.check-label) { margin-top: 16px; }
+#check-form fieldset { margin: 16px 0; padding: 14px; border: 1px solid var(--color-border); border-radius: 10px; }
+#check-form legend { padding-inline: 5px; font-weight: 650; }
+#review-summary-group .check-label { margin-top: 14px; }
+@media (max-width: 600px) {
+  .review-flow-steps { gap: 5px; }
+  .review-flow-steps button { flex-direction: column; align-items: flex-start; gap: 7px; padding: 10px 8px; font-size: .76rem; }
+  .review-flow-steps button b { width: 25px; height: 25px; flex-basis: 25px; }
+  .review-flow-actions { flex-wrap: wrap; }
+  .review-flow-actions > .btn { flex: 1 1 42%; font-size: .82rem; }
+  #review-step-position { order: -1; width: 100%; text-align: center; }
+  .review-requirements li { align-items: flex-start; flex-direction: column; gap: 5px; }
+  #check-form.workspace-card, #decision-form.workspace-card { padding: 16px; }
+}

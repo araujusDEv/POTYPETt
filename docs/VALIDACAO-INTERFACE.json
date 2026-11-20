@@ -1,0 +1,53 @@
+{
+  "status": "pass",
+  "scope": "Chrome real, aplicação local completa, banco isolado e dados fictícios; sem e-mails ou pagamentos reais.",
+  "checks": [
+    {
+      "check": "requisitos de aprovação enviados somente à administração",
+      "status": "pass"
+    },
+    {
+      "check": "foto local do login carrega no computador e responde HTTP 200",
+      "status": "pass"
+    },
+    {
+      "check": "login no celular sem rolagem horizontal",
+      "status": "pass"
+    },
+    {
+      "check": "navegação preserva preenchimento e marcações sem salvar não liberam aprovação",
+      "status": "pass"
+    },
+    {
+      "check": "salvamento confirma sucesso, mostra progresso e mantém evidências obrigatórias",
+      "status": "pass"
+    },
+    {
+      "check": "aprovação completa funciona com resumo público e consentimento de revisão",
+      "status": "pass"
+    },
+    {
+      "check": "pedido de ajustes funciona sem preencher verificações ou resumo de aprovação",
+      "status": "pass"
+    },
+    {
+      "check": "etapas da campanha acessíveis no celular sem rolagem horizontal",
+      "status": "pass"
+    },
+    {
+      "check": "nenhum erro JavaScript durante os fluxos testados",
+      "status": "pass"
+    },
+    {
+      "check": "foto do login permanece disponível após recarregar",
+      "status": "pass"
+    }
+  ],
+  "backendSuites": {
+    "tests/etapa5.cjs": "pass",
+    "tests/review-operations.cjs": "pass",
+    "tests/campaign-review-ui.cjs": "pass"
+  },
+  "deployment": "Não publicado automaticamente; página remota não respondeu à conferência.",
+  "fullNpmTestRun": false
+}

@@ -14,7 +14,7 @@ document.getElementById('contact-form').addEventListener(
         email: document.getElementById('c-email').value,
         message,
       });
-      wrapper.innerHTML = `<div class="alert alert-success">Mensagem completa registrada na fila administrativa.<br><b>Protocolo: ${escapeHTML(result.protocol)}</b><p style="color:inherit;">Guarde o protocolo. Registro não comprova leitura, resposta humana ou envio de e-mail. [A DEFINIR: responsável, canal oficial e prazos aplicáveis]. O site não envia confirmação ou resposta automática por este formulário.</p></div>`;
+      wrapper.innerHTML = `<div class="alert alert-success" role="status"><b>Mensagem registrada para a Equipe PotyPet.</b><p style="color:inherit;">Protocolo: <strong>${escapeHTML(result.protocol)}</strong></p><p style="color:inherit;">Guarde esse número. A equipe analisa as mensagens conforme a disponibilidade, sem horário fixo nem prazo fixo para dúvidas e sugestões.</p><p style="color:inherit;">Para acompanhar sua mensagem, escreva para <a href="mailto:potypett@gmail.com">potypett@gmail.com</a> e informe o protocolo. O formulário não envia confirmação automática por e-mail.</p></div>`;
     } catch (err) {
       let alert = document.getElementById('contact-alert');
       if (!alert) {
