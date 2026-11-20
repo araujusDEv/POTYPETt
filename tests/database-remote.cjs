@@ -26,6 +26,7 @@ async function stop() {
       CREATE TABLE users(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT UNIQUE NOT NULL);
       CREATE TABLE sessions(token TEXT PRIMARY KEY,user_id INTEGER REFERENCES users(id) ON DELETE CASCADE);
       CREATE TABLE app_state(key TEXT PRIMARY KEY,value TEXT NOT NULL,updated_at TEXT NOT NULL);`);
+    assert.throws(() => db.exec('PRAGMA optimize;'), (e) => e.status === 503);
     db.prepare('INSERT INTO users(name) VALUES(?)').run('Pipoca');
     db.prepare('INSERT INTO sessions VALUES(?,?)').run('token', 1);
     assert.throws(() => db.prepare('INSERT INTO sessions VALUES(?,?)').run('invalid', 99));

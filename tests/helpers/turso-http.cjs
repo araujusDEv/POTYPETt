@@ -6,8 +6,14 @@ const wire = (value) => value === null ? { type: 'null' } : value instanceof Uin
   typeof value === 'string' ? { type: 'text', value } : Number.isInteger(value) ? { type: 'integer', value: String(value) } : { type: 'float', value };
 const unwire = (v) => v.type === 'null' ? null : v.type === 'blob' ? Buffer.from(v.base64, 'base64') : v.type === 'integer' ? Number(v.value) : v.value;
 const error = (e) => ({ message: 'SQL refused in fixture', code: e.errstr?.includes('constraint') ? 'SQLITE_CONSTRAINT' : e.errcode === 5 ? 'SQLITE_BUSY' : 'SQLITE_ERROR' });
+function allowedSql(sql) {
+  // Managed providers reserve local database maintenance for their own infrastructure.
+  if (/\bPRAGMA\s+(?:optimize|busy_timeout|journal_mode)\b/i.test(sql))
+    throw Error('Local maintenance is not allowed on the managed fixture.');
+  return sql;
+}
 function execute(c, input) {
-  const sql = input.sql ?? c.cache.get(input.sql_id), statement = c.db.prepare(sql);
+  const sql = allowedSql(input.sql ?? c.cache.get(input.sql_id)), statement = c.db.prepare(sql);
   const args = (input.args || []).map(unwire), cols = statement.columns().map((col) => ({ name: col.name, decltype: col.type || null }));
   let data;
   if (cols.length) data = statement.all(...args).map((row) => cols.map((col) => wire(row[col.name])));
@@ -43,7 +49,7 @@ const server = http.createServer(async (req, res) => {
       try {
         let response = { type: item.type };
         if (item.type === 'execute') response.result = execute(c, item.stmt);
-        else if (item.type === 'sequence') c.db.exec(item.sql ?? c.cache.get(item.sql_id));
+        else if (item.type === 'sequence') c.db.exec(allowedSql(item.sql ?? c.cache.get(item.sql_id)));
         else if (item.type === 'store_sql') c.cache.set(item.sql_id, item.sql);
         else if (item.type === 'close_sql') c.cache.delete(item.sql_id);
         else if (item.type === 'get_autocommit') response.is_autocommit = !c.db.isTransaction;

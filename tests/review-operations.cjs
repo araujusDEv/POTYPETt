@@ -130,7 +130,7 @@ async function confirm(address, guest) {
       password: 'admin123',
     });
     await test('Documentos de revisão declaram pendências, versão, fluxos e canal sem prometer resposta', async () => {
-      for (const page of ['termos.html', 'privacidade.html', 'atendimento.html', 'contato.html']) {
+      for (const page of ['termos.html', 'privacidade.html', 'atendimento.html']) {
         const r = await fetch(base + '/' + page);
         assert.equal(r.status, 200);
         const html = await r.text();
@@ -138,6 +138,13 @@ async function confirm(address, guest) {
         assert.match(html, /usuários reais/);
         assert.doesNotMatch(html, /samuelapodi1@gmail\.com|prazo de 48|resposta em 24/);
       }
+      const contact = await fetch(base + '/contato.html').then((r) => r.text());
+      assert.doesNotMatch(contact, /\[A DEFINIR:/);
+      assert.match(contact, /Equipe PotyPet/);
+      assert.match(contact, /mailto:potypett@gmail\.com/);
+      assert.match(contact, /sem horário fixo/);
+      assert.match(contact, /Sem prazo fixo/);
+      assert.doesNotMatch(contact, /prazo de 48|resposta em 24/);
       const terms = await fetch(base + '/termos.html').then((r) => r.text());
       assert.match(terms, /2026-10-13-potypet-rc6-revisao/);
       assert.match(terms, /não atribui aceite novo retroativamente/);

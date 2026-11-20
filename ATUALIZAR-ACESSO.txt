@@ -1,0 +1,45 @@
+POTYPET — RECUPERAÇÃO DE SENHA E CONFIRMAÇÃO DE CADASTRO
+Atualização de interface — 19/11/2026
+
+RESULTADO DA INVESTIGAÇÃO
+O caminho mostrado no print era Reenviar confirmação de e-mail. Essa opção não
+gera outra confirmação para uma conta que já foi confirmada.
+Depois de utilizar Esqueci minha senha → Solicitar recuperação, o responsável
+pelo projeto confirmou que o link de redefinição chegou.
+
+O QUE FOI AJUSTADO
+- A tela agora mostra Recuperar senha ou Confirmar cadastro, conforme a função.
+- A confirmação explica que se destina a um cadastro ainda não confirmado.
+- Foi adicionado o botão Quero recuperar minha senha dentro da confirmação.
+- O e-mail já digitado acompanha a troca de tela, sem precisar ser preenchido de novo.
+- Mensagens da tela anterior são limpas ao mudar de função.
+- As melhorias anteriores de campanhas e a foto local do login estão incluídas.
+
+QUAL OPÇÃO USAR
+Esqueceu a senha: Esqueci minha senha → informe o e-mail → Solicitar recuperação.
+Cadastro novo sem confirmação: Acabei de me cadastrar e preciso confirmar meu e-mail.
+Já confirmou o cadastro: não é necessário reenviar a confirmação.
+O link de recuperação vale 30 minutos e funciona uma vez. A senha alterada é a
+do PotyPet; a senha do Gmail não é alterada.
+
+COMO PUBLICAR
+1. Extraia este ZIP. Ele é um pacote completo, com as atualizações anteriores.
+2. Envie o conteúdo extraído à raiz do mesmo repositório conectado ao Render.
+   Não envie apenas o ZIP fechado. Inclua login.html, js/pages/login.js,
+   css/login-contact.css e img/login-adocao.jpg, além dos demais arquivos do pacote.
+3. Salve o commit. No Render, use Manual Deploy → Deploy latest commit quando
+   a implantação automática estiver desativada. Aguarde Live.
+4. Abra login.html e use Ctrl+F5 para conferir a nova tela.
+
+Esta atualização de interface não exige trocar as chaves de e-mail, refazer o
+script Google, apagar o banco ou alterar as senhas das contas.
+
+VALIDAÇÃO
+- tests/login-panels.cjs: navegação entre as funções, preservação do e-mail,
+  chamada da operação correta e acesso direto por ?recovery e ?verify.
+- tests/email-auth.cjs: confirmação, recuperação, validade e uso único do link,
+  permissões de ONG, intervalo de reenvio e persistência após reinício.
+- Testes automatizados em ambiente isolado, sem envio de e-mail real.
+- Recebimento real do link confirmado pelo usuário durante esta conversa.
+- Suíte npm test completa não repetida nesta atualização.
+- O pacote não foi publicado automaticamente no GitHub ou no Render.

@@ -1,0 +1,61 @@
+POTYPET — ANÁLISE GUIADA E FOTO DO LOGIN
+Atualização da versão 4.7.0 — 19/11/2026
+
+O QUE MUDOU
+1. A análise de campanhas foi organizada em três etapas:
+   Conferir campanha → Salvar verificações → Registrar decisão.
+2. A tela mostra quais assuntos foram conferidos e quais ainda estão pendentes.
+3. Selecionar caixas continua sendo diferente de salvar: a confirmação agora é explícita.
+4. Depois de concluir as conferências, aparece o botão Continuar para decisão.
+5. O formulário adicional de verificação fica recolhido quando não há pendências.
+6. Os campos da decisão aparecem conforme a escolha: aprovar, pedir ajustes,
+   reprovar, pausar, encerrar ou reativar. Campos ocultos não impedem o envio.
+7. A foto do login, o CSS correspondente e a referência atualizada estão incluídos.
+   A ordem das camadas da foto, da sobreposição e do texto foi explicitada.
+
+COMO ATUALIZAR O SITE
+1. Extraia este ZIP em uma pasta do seu computador.
+2. No MESMO repositório conectado ao Render, atualize o conteúdo extraído na raiz.
+   Envie os arquivos e as pastas; não envie somente o ZIP fechado.
+3. Confirme especialmente estes caminhos:
+   login.html
+   img/login-adocao.jpg
+   css/login-contact.css
+   campanhas.html
+   css/campaign-review-flow.css
+   js/pages/campanhas.js
+   lib/campaigns.cjs
+4. Salve o commit e aguarde a nova implantação ficar Live no Render.
+   Se a implantação automática estiver desativada, inicie um deploy do commit atualizado.
+5. Depois, abra o login e use Ctrl+F5. Confira a foto e abra uma campanha em análise.
+
+Este pacote completo reúne a base Turso de 17/11, a atualização de login/contato
+de 18/11 e as mudanças desta entrega. É uma atualização de arquivos da aplicação;
+não exige apagar o banco, criar novas contas ou reimportar as postagens.
+Mantenha as configurações e os segredos já definidos no ambiente da hospedagem.
+
+SEQUÊNCIA PARA APROVAR
+Etapa 1: leia a campanha e abra as evidências privadas.
+Etapa 2: marque somente o que foi realmente conferido, registre o resultado,
+         descreva a conferência e selecione os arquivos utilizados. Clique em
+         Salvar verificação. Repita quando houver resultados diferentes.
+Etapa 3: escolha Aprovar campanha, escreva o resumo público, confirme sua revisão
+         e clique em Aprovar campanha.
+
+Para pedir ajustes ou reprovar, a etapa 3 aceita uma justificativa sem exigir
+que todas as verificações de aprovação estejam concluídas.
+Fonte independente só deve ser marcada quando você realmente a tiver consultado.
+Regras de aprovação, privacidade e confirmação humana continuam no servidor.
+
+VALIDAÇÃO DESTA ENTREGA
+- Node 24.21.0: regressões de campanhas (tests/etapa5.cjs) aprovadas.
+- Operações de revisão (tests/review-operations.cjs) aprovadas.
+- Avisos da decisão (tests/campaign-review-ui.cjs) aprovados.
+- Chrome real com aplicação completa, banco local isolado e dados fictícios:
+  foto do login em computador e celular, preservação dos formulários entre etapas,
+  seleção sem salvamento, evidências obrigatórias, confirmação de salvamento,
+  aprovação, pedido de ajustes, campos condicionais e ausência de rolagem horizontal.
+- Nenhum pagamento ou e-mail real foi enviado nos testes.
+- A suíte npm test completa não foi repetida nesta atualização.
+- A página publicada não respondeu à conferência. Este ZIP não foi publicado
+  automaticamente: a implantação no seu repositório/Render continua necessária.
