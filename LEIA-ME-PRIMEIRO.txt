@@ -1,3 +1,7 @@
+ATUALIZAÇÃO MAIS RECENTE: leia ATUALIZAR-ACESSO.txt. Este pacote inclui também a análise guiada e a foto do login.
+
+ATUALIZAÇÃO DE INTERFACE: leia ATUALIZAR-INTERFACE.txt antes de enviar os arquivos para o repositório.
+
 POTYPET — PUBLICAR SEM PAGAR
 
 1. Leia docs/guias/RENDER-GRATUITO.md.

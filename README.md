@@ -1,5 +1,9 @@
 # PotyPet — Render gratuito com dados persistidos no Turso
 
+**Atualização do acesso — 19/11/2026:** recuperação de senha e confirmação de cadastro agora possuem títulos e instruções diferentes, com atalho para recuperar a senha e preservação do e-mail digitado. Leia `ATUALIZAR-ACESSO.txt`.
+
+**Atualização de interface — 19/11/2026:** análise de campanhas em três etapas, progresso das verificações, campos condicionais e foto local do login. Para atualizar a instalação existente, leia `ATUALIZAR-INTERFACE.txt`.
+
 Este pacote foi adaptado para **Render Free + Turso Free + e-mail Google por HTTPS**, com as postagens e nove fotos já incluídas. O `render.yaml` não cria disco ou serviço pago. As contas e os segredos dos provedores são configurados por você, conforme o guia.
 
 **Comece por [RENDER-GRATUITO.md](docs/guias/RENDER-GRATUITO.md).** Ele explica como atualizar o mesmo repositório no GitHub, criar o banco, preparar o e-mail e corrigir o erro de `/var/data/appet` sem contratar disco.
