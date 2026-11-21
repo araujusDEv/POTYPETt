@@ -1,0 +1,68 @@
+name: Backup cifrado e restauração do PotyPet
+on:
+  workflow_dispatch:
+  schedule:
+    # 06:17 UTC = 03:17 no fuso America/Sao_Paulo (UTC-3).
+    - cron: '17 6 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: potypet-backup
+  cancel-in-progress: false
+jobs:
+  exportar:
+    # O primeiro teste pode ser manual. A agenda exige ativação expressa da equipe.
+    if: vars.POTYPET_BACKUP_ENABLED == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      # As credenciais não são expostas aos scripts de instalação das dependências.
+      - run: npm ci --omit=dev
+      - name: Exportar banco, cifrar e conferir a cópia
+        run: node scripts/backup-ci.cjs "$RUNNER_TEMP/potypet-backup"
+        env:
+          NODE_ENV: production
+          DATABASE_DRIVER: turso
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+      - name: Guardar somente a cópia cifrada
+        uses: actions/upload-artifact@v7
+        with:
+          name: potypet-backup-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/potypet-backup/*.db.enc
+            ${{ runner.temp }}/potypet-backup/*.manifest.json
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+  restaurar:
+    needs: exportar
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - uses: actions/download-artifact@v8
+        with:
+          name: potypet-backup-${{ github.run_id }}
+          path: ${{ runner.temp }}/potypet-backup-download
+      # Esta etapa não recebe token nem URL do banco de produção.
+      - name: Descriptografar e restaurar em ambiente separado
+        run: node scripts/verify-backup-ci.cjs "$RUNNER_TEMP/potypet-backup-download"
+        env:
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+      - name: Registrar conclusão do ensaio
+        run: echo 'Cópia cifrada baixada e restauração isolada aprovada. Banco ativo preservado.' >> "$GITHUB_STEP_SUMMARY"
