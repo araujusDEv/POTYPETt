@@ -49,6 +49,13 @@ jobs:
               console.log(name + ': FORMATO_VALIDO');
             } catch {
               console.log(name + ': FORMATO_INVALIDO');
+              if (name === 'BACKUP_ENCRYPTION_KEY') {
+                const value = process.env[name];
+                let trimmedValid = false;
+                try { key(value.trim()); trimmedValid = true; } catch {}
+                console.log('CHAVE_TAMANHO_ESPERADO: ' + (value.length === 44 ? 'SIM' : 'NAO'));
+                console.log('CHAVE_VALIDA_SEM_ESPACOS_EXTERNOS: ' + (trimmedValid ? 'SIM' : 'NAO'));
+              }
               valid = false;
             }
           }
