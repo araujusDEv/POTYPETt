@@ -1,0 +1,56 @@
+name: Conferir configuração privada do backup
+on:
+  push:
+    branches:
+      - codex/diagnostico-backup-20261120
+    paths:
+      - .github/workflows/backup-diagnostico.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  configuracao:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - name: Validar formatos sem exibir os valores
+        env:
+          NODE_ENV: production
+          DATABASE_DRIVER: turso
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        run: |
+          node - <<'NODE'
+          'use strict';
+          const { key } = require('./lib/backup-crypto.cjs');
+          const { settings } = require('./lib/database.cjs');
+          const checks = [
+            ['BACKUP_ENCRYPTION_KEY', () => key(process.env.BACKUP_ENCRYPTION_KEY)],
+            ['TURSO_DATABASE_URL', () => settings({ ...process.env, TURSO_AUTH_TOKEN: 'token_sintetico_apenas_para_validar_formato_123' })],
+            ['TURSO_AUTH_TOKEN', () => settings({ ...process.env, TURSO_DATABASE_URL: 'libsql://configuracao.invalid' })],
+          ];
+          let valid = true;
+          for (const [name, check] of checks) {
+            if (!process.env[name]) {
+              console.log(name + ': AUSENTE');
+              valid = false;
+              continue;
+            }
+            try {
+              check();
+              console.log(name + ': FORMATO_VALIDO');
+            } catch {
+              console.log(name + ': FORMATO_INVALIDO');
+              valid = false;
+            }
+          }
+          process.exitCode = valid ? 0 : 1;
+          NODE
