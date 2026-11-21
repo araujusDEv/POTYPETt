@@ -24,6 +24,7 @@ jobs:
         env:
           NODE_ENV: production
           DATABASE_DRIVER: turso
+          POTYPET_BACKUP_ENABLED: ${{ vars.POTYPET_BACKUP_ENABLED }}
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
           BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
@@ -59,5 +60,7 @@ jobs:
               valid = false;
             }
           }
-          process.exitCode = valid ? 0 : 1;
+          const enabled = process.env.POTYPET_BACKUP_ENABLED === 'true';
+          console.log('POTYPET_BACKUP_ENABLED: ' + (enabled ? 'ATIVADO' : 'NAO_ATIVADO'));
+          process.exitCode = valid && enabled ? 0 : 1;
           NODE
