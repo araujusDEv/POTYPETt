@@ -53,3 +53,7 @@
 .login-photo-page .auth-visual-login > .auth-scene { display: block; z-index: 0; }
 .login-photo-page .auth-visual-login::after { z-index: 1; pointer-events: none; }
 .login-photo-page .auth-visual-login .auth-visual-content { z-index: 2; }
+
+/* O botão acompanha o campo, sem deslocamento pelo texto de ajuda ou medidor. */
+.register-page .password-input { position: relative; }
+.register-page .password-input input { width: 100%; }

@@ -1,0 +1,37 @@
+POTYPET — REVISÃO DE CADASTRO, TERMOS E PRIVACIDADE
+Versão interna dos documentos: 2026-11-22-potypet-operacao-2.
+Base examinada: c56a21488e127a80c83f8e8cdf6aebee9bc201dd.
+
+ALTERAÇÕES
+- Foto já utilizada no login incluída no cadastro; camadas e recorte reutilizados.
+- Botões de senha posicionados dentro do campo, com rótulos e estado acessíveis.
+- Cabeçalho visível sem data ou código técnico; identificação da revisão mantida
+  em metadados e na configuração usada pelo servidor para novos aceites.
+- Redação de termos e privacidade reorganizada para leitura, preservando regras,
+  direitos, limites e critérios de conservação existentes.
+- Aceite de termos diferenciado da declaração de leitura da política no cadastro.
+- Texto de backup atualizado com base nas execuções agendadas verificadas.
+
+EVIDÊNCIA DE BACKUP
+Execução 45033761794, evento schedule, iniciada em 22/11/2026, 14h36 UTC.
+Jobs exportar e restaurar concluídos com success. Exportação, armazenamento do
+artefato cifrado, download e verificação da recuperação em destino separado
+concluídos. Também consta execução agendada aprovada em 21/11/2026 (44915143343).
+Fonte: https://github.com/araujusDEv/POTYPETt/actions/runs/45033761794
+O resultado não comprova recuperação funcional completa do site em novo Turso.
+
+PONTOS OPERACIONAIS QUE DEPENDEM DA EQUIPE
+- Identificar as pessoas ou entidade que efetivamente assumem as decisões e
+  responsabilidades atribuídas à Equipe PotyPet, inclusive depois do curso.
+- Conferir países/regiões, contratos e mecanismo aplicável às transferências
+  dos provedores atuais. Nenhuma região ou garantia contratual foi presumida.
+- Confirmar e registrar a aplicação das bases legais, inclusive a análise de
+  necessidade e balanceamento quando houver uso de legítimo interesse.
+- Decidir a regra etária do cadastro geral; a regra existente exige 18 anos
+  para solicitar adoção. Esta revisão não cria uma política nova para menores.
+- Executar e registrar as revisões mensais, os pedidos dos titulares e as
+  simulações de incidentes e de eliminação em cópia isolada.
+
+Os documentos anteriores e os registros de aceite não devem ser reescritos.
+Registros antigos conservam a versão e a data originais. Esta revisão não
+declara conformidade integral, não contrata provedores e não nomeia pessoas.

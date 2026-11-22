@@ -6,6 +6,7 @@ const fs = require('node:fs'),
   assert = require('node:assert/strict'),
   { spawn } = require('node:child_process'),
   { DatabaseSync } = require('node:sqlite');
+const governance = require('../lib/governance.cjs');
 const root = path.resolve(__dirname, '..'),
   dir = fs.mkdtempSync(path.join(os.tmpdir(), 'potypet-review-')),
   base = 'http://127.0.0.1:3203',
@@ -137,7 +138,9 @@ async function confirm(address, guest) {
         assert.doesNotMatch(html, /\[A DEFINIR:/);
         assert.match(html, /Equipe PotyPet/);
         assert.match(html, /segunda a quinta-feira/);
-        assert.match(html, /2026-11-19-potypet-operacao-1/);
+        assert.ok(html.includes(`name="potypet-policy-version" content="${governance.version}"`));
+        const visible = html.replace(/<head>[\s\S]*?<\/head>/i, '').replace(/<[^>]*>/g, ' ');
+        assert.doesNotMatch(visible, /2026-11-19-potypet-operacao-1|atualização de 19\/11\/2026/);
         assert.doesNotMatch(html, /samuelapodi1@gmail\.com|prazo de 48|resposta em 24/);
       }
       const contact = await fetch(base + '/contato.html').then((r) => r.text());
@@ -148,7 +151,7 @@ async function confirm(address, guest) {
       assert.match(contact, /prazos legais aplicáveis/);
       assert.doesNotMatch(contact, /prazo de 48|resposta em 24/);
       const terms = await fetch(base + '/termos.html').then((r) => r.text());
-      assert.match(terms, /2026-11-19-potypet-operacao-1/);
+      assert.ok(terms.includes(`name="potypet-policy-version" content="${governance.version}"`));
       assert.match(terms, /não atribui aceite novo retroativamente/);
       assert.match(terms, /Suspender uma conta não identifica a pessoa/);
       await fetch(base + '/docs/historico/PotyPet-4.7.0-rc.5/termos.html').then((r) =>
@@ -156,7 +159,7 @@ async function confirm(address, guest) {
       );
     });
     await test('Atualização exige sessão e aceite explícito; preserva versão e data anteriores', async () => {
-      await guest.call('POST','/api/account/policy-acceptance',{version:'2026-11-19-potypet-operacao-1',accepted:true},401);
+      await guest.call('POST','/api/account/policy-acceptance',{version:governance.version,accepted:true},401);
       const before = sql((db) => db.prepare('SELECT terms_version,terms_accepted_at FROM users WHERE email=?').get('admin@adotapet.com'));
       const status = await admin.call('GET','/api/auth/me');
       assert.equal(status.policy.accepted,false);
@@ -186,7 +189,7 @@ async function confirm(address, guest) {
         password: 'TesteSeguro9',
       });
       const u = (await owner.call('GET', '/api/auth/me')).user;
-      assert.equal(u.termsVersion, '2026-11-19-potypet-operacao-1');
+      assert.equal(u.termsVersion, governance.version);
       assert.ok(u.termsAcceptedAt);
     });
     await test('Confirmação pendente antiga conserva aceite antigo, sem atribuição retroativa', async () => {
