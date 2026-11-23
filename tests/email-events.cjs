@@ -43,6 +43,23 @@ function testReminders() {
     mail.stop();
   } finally { db.close(); }
 }
+function testAdminDemoStatistics() {
+  const grid = { innerHTML: '' }, vm = require('node:vm');
+  const context = vm.createContext({
+    App: { ready() {} }, document: { getElementById: () => grid },
+    Store: {
+      getUsers: () => [],
+      getAnimals: () => [{ id: 1, status: 'adotado', demonstration: true }, { id: 2, status: 'disponivel' }],
+      getRequests: () => [{ id: 1, status: 'concluida', demonstration: true, createdAt: '2026-11-01', completedAt: '2026-11-22' }],
+      getMissing: () => [], getReports: () => [],
+    },
+  });
+  vm.runInContext(fs.readFileSync(path.join(root, 'js/pages/admin.js'), 'utf8'), context);
+  vm.runInContext('renderStats()', context);
+  assert.match(grid.innerHTML, /<b>1<\/b>Animais cadastrados/);
+  assert.match(grid.innerHTML, /<b>0<\/b>Adotados/);
+  assert.match(grid.innerHTML, /<b>-<\/b>Dias médios/);
+}
 async function messages(expected) {
   for (let i = 0; i < 600; i++) {
     const dir = path.join(dataDir, 'email-preview');
@@ -84,6 +101,8 @@ async function messages(expected) {
     sql((db) => db.prepare('UPDATE users SET email_verified_at=created_at WHERE id=?').run(f.users.other.id));
     const demo = await admin.call('POST', '/api/admin/video-demo', { confirmed: true });
     assert.equal(demo.day, 30); assert.equal(count(), 4);
+    const demoCard = (await admin.call('GET', '/api/animals/cards?view=manage')).find((a) => a.id === demo.animalId);
+    assert.equal(demoCard.demonstration, true, 'A lista compacta deve preservar a identificação de demonstração usada pelos indicadores administrativos.');
     assert.deepEqual(await admin.call('POST', '/api/admin/video-demo', { confirmed: true }), demo);
     assert.equal(count(), 4);
     assert.deepEqual(await guest.call('GET', '/api/stats'), before);
@@ -130,6 +149,7 @@ async function messages(expected) {
     assert.equal(clock.available({ completedAt: new Date().toISOString(), demoDay: 90 }, 90), false);
     assert.equal(clock.available({ completedAt: 'inválido' }, 7), false);
     testReminders();
+    testAdminDemoStatistics();
     assert.deepEqual(await guest.call('GET', '/api/stats'), before);
     for (const route of ['/api/admin/video-demo', '/api/admin/video-demo/advance']) {
       await admin.call('POST', '/api/auth/login', { email: 'admin@adotapet.com', password: 'admin123' });
