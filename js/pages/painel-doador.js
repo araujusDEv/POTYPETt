@@ -287,7 +287,7 @@ function renderAcompanhamentosTab() {
         return (
           '<article class="card" style="padding:20px;margin-bottom:16px"><h3>' +
           escapeHTML(animal?.name || r.animalName || 'Registro histórico') +
-          '</h3><p>Adotante: ' +
+          '</h3>' + (r.demonstration ? '<p class="alert">Demonstração: dados fictícios e ' + Number(r.demoDay) + ' dias simulados; sem adoção real.</p>' : '') + '<p>Adotante: ' +
           escapeHTML(r.full_name || r.requester?.name || 'Família') +
           '</p><div class="followup-timeline">' +
           [7, 30, 90]
@@ -299,9 +299,9 @@ function renderAcompanhamentosTab() {
                   '<div class="followup-step"><b>' +
                   day +
                   ' dias</b><span>' +
-                  (Date.now() >= due.getTime()
+                  (followupAvailable(r, day)
                     ? 'Aguardando resposta do adotante'
-                    : 'Disponível em ' + due.toLocaleDateString('pt-BR')) +
+                    : r.demonstration ? 'Aguarde o avanço da demonstração' : 'Disponível em ' + due.toLocaleDateString('pt-BR')) +
                   '</span></div>'
                 );
               return (
@@ -340,9 +340,7 @@ function renderAcompanhamentosTab() {
               );
             })
             .join('') +
-          '</div><a href="contrato.html?request=' +
-          r.id +
-          '">Consultar termo</a></article>'
+          '</div>' + (r.demonstration ? '' : '<a href="contrato.html?request=' + r.id + '">Consultar termo</a>') + '</article>'
         );
       })
       .join('') +

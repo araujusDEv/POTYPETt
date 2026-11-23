@@ -56,7 +56,7 @@ function renderMinhasSolicitacoes() {
             )
             .join('')}</div>`;
 
-      const storyHTML = !concluded
+      const storyHTML = !concluded || r.demonstration
         ? ''
         : r.story
           ? `<div id="story-block-${Number(r.id)}" style="margin-top:14px;padding:12px 14px;background:var(--color-bg-alt);border-radius:var(--radius-sm);">
@@ -71,17 +71,17 @@ function renderMinhasSolicitacoes() {
         ? ''
         : `<div class="followup-panel">
       <b>Acompanhamento pós-adoção</b>
-      <p style="font-size:.84rem;margin:5px 0;">Conte como está a adaptação em três momentos importantes. Se precisar de ajuda, o responsável será avisado.</p>
+      <p style="font-size:.84rem;margin:5px 0;">Conte como está a adaptação em três momentos importantes. Cada envio gera um aviso ao responsável e um comprovante de registro por e-mail.</p>
       <div class="followup-timeline">${[7, 30, 90]
         .map((day) => {
           const done = requestFollowups.find((f) => f.day === day);
           const dueAt = new Date(
             new Date(r.completedAt || r.acceptedAt).getTime() + day * 86400000,
           );
-          const due = Date.now() >= dueAt.getTime();
+          const due = followupAvailable(r, day);
           return `<div class="followup-step ${done ? 'done' : ''}" id="followup-step-${Number(r.id)}-${day}">
           <b>${day} dias ${done ? svgIcon('check') : ''}</b>
-          <span>${done ? `Enviado em ${new Date(done.createdAt).toLocaleDateString('pt-BR')}` : due ? 'Disponível agora' : `Disponível em ${dueAt.toLocaleDateString('pt-BR')}`}</span>
+          <span>${done ? `${done.demonstration ? 'Demonstração registrada' : 'Enviado'} em ${new Date(done.createdAt).toLocaleDateString('pt-BR')}` : due ? 'Disponível agora' : r.demonstration ? 'Aguarde o avanço da demonstração para 90 dias' : `Disponível em ${dueAt.toLocaleDateString('pt-BR')}`}</span>
           ${done?.needsHelp ? '<p class="alert ' + (done.helpResponse ? 'alert-success' : 'alert-error') + '">' + (done.helpResponse ? 'Orientação recebida. Abra o acompanhamento para ler.' : 'Ajuda solicitada. Quem age: responsável; aguarde a orientação ou use a conversa privada.') + '</p>' : ''}
           ${done ? `<details class="followup-saved"><summary>Ler acompanhamento enviado</summary><p><b>Adaptação:</b> ${escapeHTML({ otima: 'Ótima', boa: 'Boa, ainda adaptando', dificil: 'Difícil' }[done.adaptation] || 'Não informada')}</p><p><b>Saúde:</b> ${escapeHTML(done.health || 'Não informada')}</p><p><b>Comportamento:</b> ${escapeHTML(done.behavior || 'Não informado')}</p><p>${done.needsHelp ? (done.helpResponse ? 'Orientação recebida: ' + escapeHTML(done.helpResponse) : 'Você pediu ajuda. Quem age: responsável; aguarde a orientação ou continue pela conversa privada.') : 'Você não solicitou apoio.'}</p>${safeImageSrc(done.photo) ? `<img src="${escapeAttr(safeImageSrc(done.photo))}" alt="Foto enviada no acompanhamento de ${day} dias" loading="lazy">` : ''}</details>` : ''}
           ${!done && due && !user.historicalAccess ? `<button class="btn btn-outline btn-sm" data-action="showFollowupForm" data-arg-0="${Number(r.id)}" data-arg-1="${day}">Responder</button>` : ''}
@@ -98,8 +98,8 @@ function renderMinhasSolicitacoes() {
         </div>
         ${animal ? `<p><a href="animal.html?id=${Number(animal.id)}">Consultar perfil e histórico do animal</a>${animal.archivedAt ? ' · Anúncio arquivado' : ''}</p>` : ''}${stepperHTML}<p class="request-policy">${escapeHTML(user.historicalAccess ? 'Consulta restrita: leia seu pedido, termo e acompanhamentos anteriores. Novas ações estão bloqueadas.' : adoptionNextStep(r))}</p>${requestContactHTML(r, user)}
         ${r.status === 'aprovada' && r.handoverAt && !r.receiptConfirmedAt && !user.historicalAccess ? '<button class="btn btn-primary btn-sm" data-action="confirmReceipt" data-arg-0="' + Number(r.id) + '">Confirmar recebimento do animal</button>' : ''}
-        ${concluded && (r.completedAt || r.acceptedAt) ? `<p style="font-size:.82rem;color:var(--color-ink-soft);margin:10px 0 0;">Adoção concluída em ${new Date(r.completedAt || r.acceptedAt).toLocaleDateString('pt-BR')}</p>` : ''}
-        ${concluded ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;"><a href="contrato.html?request=${Number(r.id)}" class="btn btn-primary btn-sm">Abrir termo de adoção</a></div>` : ''}
+        ${r.demonstration ? `<p class="alert"><b>Demonstração — ${Number(r.demoDay)} dias simulados.</b> Animal fictício; este cenário não entra nas estatísticas de adoção.</p>` : concluded && (r.completedAt || r.acceptedAt) ? `<p style="font-size:.82rem;color:var(--color-ink-soft);margin:10px 0 0;">Adoção concluída em ${new Date(r.completedAt || r.acceptedAt).toLocaleDateString('pt-BR')}</p>` : ''}
+        ${concluded && !r.demonstration ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;"><a href="contrato.html?request=${Number(r.id)}" class="btn btn-primary btn-sm">Abrir termo de adoção</a></div>` : ''}
         ${!user.historicalAccess && !r.handoverAt && ['pendente', 'em_analise', 'aprovada'].includes(r.status) ? `<button class="btn btn-outline btn-sm" style="margin-top:12px" data-action="cancelMyRequest" data-arg-0="${Number(r.id)}">Cancelar solicitação</button>` : ''}
         ${followupHTML}
         ${storyHTML}
