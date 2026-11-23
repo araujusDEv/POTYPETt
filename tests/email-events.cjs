@@ -106,6 +106,23 @@ async function messages(expected) {
     assert.equal(demoCard.sex, 'macho');
     assert.deepEqual(await admin.call('POST', '/api/admin/video-demo', { confirmed: true }), demo);
     assert.equal(count(), 4);
+    const ninoPhoto = (await admin.call('GET', '/api/animals/' + demo.animalId)).photos[0];
+    const photoResponse = await fetch(base + ninoPhoto, { headers: { Cookie: admin.cookie } });
+    assert.equal(photoResponse.status, 200);
+    const photoMetadata = await require('sharp')(Buffer.from(await photoResponse.arrayBuffer())).metadata();
+    assert.equal(photoMetadata.format, 'webp');
+    assert.ok(photoMetadata.width >= 600 && photoMetadata.height >= 400);
+    sql((db) => {
+      const animals = JSON.parse(db.prepare("SELECT value FROM app_state WHERE key='animals'").get().value);
+      animals.find((a) => a.id === demo.animalId).photos = ['img/animal1.png'];
+      db.prepare("UPDATE app_state SET value=? WHERE key='animals'").run(JSON.stringify(animals));
+    });
+    const placeholderPhoto = (await admin.call('GET', '/api/animals/' + demo.animalId)).photos[0];
+    assert.notEqual(placeholderPhoto, ninoPhoto);
+    await admin.call('POST', '/api/admin/video-demo', { confirmed: true });
+    assert.equal((await admin.call('GET', '/api/animals/' + demo.animalId)).photos[0], ninoPhoto);
+    assert.equal(count(), 4, 'A correção da foto deve preservar os e-mails e as etapas do acompanhamento.');
+    assert.deepEqual((await other.call('GET', '/api/followups')).filter((f) => f.requestId === demo.requestId).map((f) => f.day), [7, 30]);
     assert.deepEqual(await guest.call('GET', '/api/stats'), before);
     assert.equal((await guest.call('GET', '/api/stories')).some((r) => r.id === demo.requestId), false);
     await guest.call('GET', '/api/animals/' + demo.animalId, undefined, 404);
