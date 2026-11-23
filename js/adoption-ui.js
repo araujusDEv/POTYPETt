@@ -1,5 +1,7 @@
 /* Private request tools shared by the applicant and the responsible person's panel. */
 function adoptionNextStep(r) {
+  if (r.demonstration)
+    return 'Demonstração com dados e tempo simulados. O adotante pode enviar o acompanhamento; não há adoção real ou termo para assinar.';
   if (r.status === 'pendente' || r.status === 'em_analise')
     return 'Quem age: responsável. Próximo passo: analisar o formulário e aprovar ou recusar o interesse. O interessado pode responder pela conversa privada.';
   if (r.status === 'aprovada' && !r.handoverAt)
@@ -11,6 +13,11 @@ function adoptionNextStep(r) {
   if (r.status === 'concluida')
     return 'Quem age: cada parte. Próximo passo: abrir o termo e registrar sua leitura e concordância. O adotante envia os acompanhamentos de 7, 30 e 90 dias; o responsável responde aos pedidos de ajuda.';
   return 'Pedido encerrado. Não há nova ação de adoção neste pedido. Consulte o motivo e o histórico; o interessado pode conhecer outros animais disponíveis.';
+}
+function followupAvailable(request, day) {
+  if (request.demonstration === true && request.demoScenario === 'potypet-video-followups-v1')
+    return [30, 90].includes(request.demoDay) && request.demoDay >= day;
+  return Date.now() >= Date.parse(request.completedAt || request.acceptedAt) + day * 86400000;
 }
 function requestContactHTML(r, user) {
   const applicant = Number(r.requesterId) === user.id,

@@ -7,8 +7,8 @@ function animalApprovalPolicyText() {
 
 function renderStats() {
   const users = Store.getUsers();
-  const animals = Store.getAnimals();
-  const requests = Store.getRequests();
+  const animals = Store.getAnimals().filter((a) => !a.demonstration);
+  const requests = Store.getRequests().filter((r) => !r.demonstration);
   const acceptedWithDate = requests.filter(
     (r) => r.status === 'concluida' && (r.completedAt || r.acceptedAt) && r.createdAt,
   );
@@ -439,10 +439,38 @@ const TABS = {
   'tab-desaparecidos': renderMissingTab,
 };
 
+function bindEmailAndVideoTools() {
+  const bind = (id, areaId, action) => {
+    document.getElementById(id)?.addEventListener('click', async (event) => {
+      const button = event.currentTarget, area = document.getElementById(areaId);
+      if (button.disabled) return;
+      button.disabled = true;
+      area.textContent = 'Conferindo…';
+      try { area.textContent = await action(); }
+      catch (err) { area.textContent = err.message; }
+      finally { button.disabled = false; }
+    });
+  };
+  bind('test-email-delivery', 'email-test-status', async () => {
+    const result = await apiRequestAsync('POST', '/api/admin/email-test', {});
+    return `Teste colocado na fila para ${result.recipient}. Confira a chegada na caixa de entrada ou no spam. O painel não acessa sua caixa postal.`;
+  });
+  for (const [id, method, route] of [
+    ['check-video-demo', 'GET', '/api/admin/video-demo'],
+    ['prepare-video-demo', 'POST', '/api/admin/video-demo'],
+    ['advance-video-demo', 'POST', '/api/admin/video-demo/advance'],
+  ]) bind(id, 'video-demo-status', async () => {
+    const result = await apiRequestAsync(method, route, method === 'POST' ? { confirmed: true } : undefined);
+    if (!result.exists) return 'Cenário ainda não preparado. As duas contas de teste precisam existir e estar confirmadas e aprovadas.';
+    return `Nino — demonstração: animal #${result.animalId}, solicitação #${result.requestId}, ${result.day} dias simulados. Entre como ${result.adopterEmail} em Minhas Solicitações para responder e como ${result.ownerEmail} em Acompanhamentos para conferir. ${result.message}`;
+  });
+}
+
 App.ready(() => {
   const user = Auth.requireAuth(['admin']);
   if (!user) return;
   adminUser = user;
+  bindEmailAndVideoTools();
   document.getElementById('check-launch-status')?.addEventListener(
     'click',
     App.click(async () => {

@@ -186,7 +186,7 @@ function normalizeEmail(value) {
   return inputText(value, 254).toLowerCase();
 }
 function validEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  return /^[^\s<>@,;]+@[^\s<>@,;]+\.[^\s<>@,;]+$/.test(email);
 }
 function validExternalUrl(value) {
   if (!value) return true;
@@ -466,12 +466,16 @@ function addNotification(userId, message) {
   });
   saveState('notifications', list);
 }
-function eventMail(userId, kind, eventKey, destination) {
+function eventMail(userId, kind, eventKey, destination, details) {
   if (!mail.enabled || !userId) return;
   const recipient = db
     .prepare('SELECT email,email_verified_at FROM users WHERE id=?')
     .get(Number(userId));
-  if (recipient?.email_verified_at) mail.queueEvent(recipient.email, kind, eventKey, destination);
+  if (recipient?.email_verified_at) {
+    mail.queueEvent(recipient.email, kind, eventKey, destination, details);
+    return true;
+  }
+  return false;
 }
 function notifyAnimalSubmission(animal) {
   const event = crypto.randomUUID();
@@ -1047,7 +1051,10 @@ function createRegisteredUser(profile, credentials, verified = false) {
     );
     db.prepare("SELECT id FROM users WHERE role='admin'")
       .all()
-      .forEach((admin) => addNotification(admin.id, `Nova ONG aguardando análise: ${name}.`));
+      .forEach((admin) => {
+        addNotification(admin.id, `Nova ONG aguardando análise: ${name}.`);
+        eventMail(admin.id, 'organization', `organization:${id}:submission`, 'admin.html');
+      });
   }
   return db.prepare('SELECT * FROM users WHERE id=?').get(id);
 }
@@ -1075,10 +1082,13 @@ const handleCampaigns = require('./lib/campaigns.cjs')({
   rateLimit,
   now,
   addNotification,
+  eventMail,
   addAdminLog,
   isPublicAnimal,
   accountLimits,
 });
+const videoDemo = require('./lib/video-demo.cjs')({ db, loadState, saveState, newId, now, addAdminLog, eventMail });
+const followupReminders = require('./lib/followup-reminders.cjs')({ db, loadState, saveState, eventMail });
 
 // Todas as rotas da API. Cada bloco abaixo trata uma área, e os comentários marcam onde ela começa.
 async function handleApi(req, res, url) {
@@ -1101,6 +1111,33 @@ async function handleApi(req, res, url) {
   if (method === 'GET' && pathname === '/api/health') {
     if (databaseConfig.remote) db.prepare('SELECT 1').get();
     return json(res, 200, { ok: true, database: databaseConfig.remote ? 'Turso/libSQL' : 'SQLite', time: now() });
+  }
+
+  if (pathname === '/api/admin/video-demo' || pathname === '/api/admin/video-demo/advance') {
+    const admin = requireUser(req, res, ['admin']);
+    if (!admin) return;
+    if (method === 'GET' && pathname === '/api/admin/video-demo') return json(res, 200, videoDemo.status());
+    if (method !== 'POST') return error(res, 405, 'Método não permitido.');
+    const body = await readBody(req);
+    if (body.confirmed !== true) return error(res, 400, 'Confirme a criação ou avanço da demonstração.');
+    if (!mail.enabled) return error(res, 409, 'Configure o envio de e-mail antes da demonstração.');
+    return json(res, 200, pathname.endsWith('/advance') ? videoDemo.advance(admin) : videoDemo.create(admin));
+  }
+  if (method === 'POST' && pathname === '/api/admin/email-test') {
+    const admin = requireUser(req, res, ['admin']);
+    if (!admin) return;
+    if (!mail.enabled) return error(res, 409, 'O envio de e-mail está desativado.');
+    if (!mail.allow(admin.email, 'admin-delivery-test')) return error(res, 429, 'Aguarde um minuto; limite de três testes por hora.');
+    try {
+      const verified = await mail.verify();
+      if (verified?.remaining === 0) return error(res, 503, 'A cota diária do remetente foi esgotada. Aguarde a renovação da cota do Google.');
+    } catch {
+      return error(res, 503, 'O provedor recusou a verificação. Confira remetente, autorização e cota de envio.');
+    }
+    const currentAdmin = requireUser(req, res, ['admin']);
+    if (!currentAdmin) return;
+    eventMail(currentAdmin.id, 'test', 'test:' + crypto.randomUUID(), 'admin.html');
+    return json(res, 202, { queued: true, inboxDeliveryVerified: false, recipient: currentAdmin.email });
   }
 
   // Diagnóstico para o admin, política de fotos e estatísticas.
@@ -1141,8 +1178,8 @@ async function handleApi(req, res, url) {
       ).length,
       missing: missing.filter((m) => !m.hiddenAt && !m.found).length,
       found: missing.filter((m) => !m.hiddenAt && m.found).length,
-      completedAdoptions: requests.filter((r) => r.status === 'concluida').length,
-      postAdoptionUpdates: followups.length,
+      completedAdoptions: requests.filter((r) => !r.demonstration && r.status === 'concluida').length,
+      postAdoptionUpdates: followups.filter((f) => !f.demonstration).length,
       supportPoints: loadState('supportPoints').length,
     });
   }
@@ -2014,7 +2051,7 @@ async function handleApi(req, res, url) {
 
   if (method === 'GET' && pathname === '/api/stories') {
     const stories = loadState('requests')
-      .filter((r) => r.status === 'concluida' && r.story && r.storyPublic === true)
+      .filter((r) => !r.demonstration && r.status === 'concluida' && r.story && r.storyPublic === true)
       .map((r) => {
         const animal = getAnimal(r.animalId),
           publicAnimal = isPublicAnimal(animal);
@@ -2127,6 +2164,7 @@ async function handleApi(req, res, url) {
         user.id,
         `Sua solicitação para ${animal.name} foi recebida e está pendente de análise.`,
       );
+      eventMail(user.id, 'requestReceipt', `request:${record.id}:receipt`, 'minhas-solicitacoes.html');
       addNotification(
         animal.ownerId,
         `${user.name} enviou uma solicitação de adoção para ${animal.name}.`,
@@ -2427,15 +2465,20 @@ async function handleApi(req, res, url) {
       status: 'aberta',
       createdAt: now(),
     });
-    saveState('reports', list);
-    db.prepare("SELECT id FROM users WHERE role='admin'")
-      .all()
-      .forEach((admin) =>
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      saveState('reports', list);
+      db.prepare("SELECT id FROM users WHERE role='admin'")
+        .all()
+        .forEach((admin) => {
         addNotification(
           admin.id,
           `PotyPet recebeu uma nova mensagem de atendimento: protocolo APPET-${id}.`,
-        ),
-      );
+        );
+        eventMail(admin.id, 'contact', `contact:${id}:received`, 'admin.html');
+        });
+      db.exec('COMMIT');
+    } catch (err) { db.exec('ROLLBACK'); throw err; }
     return json(res, 201, { ok: true, protocol: 'APPET-' + id });
   }
 
@@ -2470,7 +2513,15 @@ async function handleApi(req, res, url) {
     };
     if (!record.reason) return error(res, 400, 'Informe os detalhes da mensagem/denúncia.');
     list.push(record);
-    saveState('reports', list);
+    db.exec('BEGIN IMMEDIATE');
+    try {
+      saveState('reports', list);
+      for (const admin of db.prepare("SELECT id FROM users WHERE role='admin'").all()) {
+        addNotification(admin.id, `Nova denúncia para análise: #${record.id}.`);
+        eventMail(admin.id, 'report', `report:${record.id}:received`, 'admin.html');
+      }
+      db.exec('COMMIT');
+    } catch (err) { db.exec('ROLLBACK'); throw err; }
     return json(res, 201, record);
   }
   if (method === 'GET' && pathname === '/api/reports') {
@@ -2584,11 +2635,14 @@ async function handleApi(req, res, url) {
         field = user.id === contract.adopterId ? 'adopterAcknowledgedAt' : 'ownerAcknowledgedAt';
       if (!fresh[i][field]) {
         fresh[i][field] = now();
-        saveState('contracts', fresh);
-        addNotification(
-          user.id === contract.adopterId ? contract.ownerId : contract.adopterId,
-          'A outra parte registrou a leitura e concordância com o termo de adoção.',
-        );
+        db.exec('BEGIN IMMEDIATE');
+        try {
+          saveState('contracts', fresh);
+          const recipient = user.id === contract.adopterId ? contract.ownerId : contract.adopterId;
+          addNotification(recipient, 'A outra parte registrou a leitura e concordância com o termo de adoção.');
+          eventMail(recipient, 'acknowledgement', `contract:${contract.id}:${field}`, 'contrato.html?request=' + requestId);
+          db.exec('COMMIT');
+        } catch (err) { db.exec('ROLLBACK'); throw err; }
       }
       return json(res, 200, fresh[i]);
     }
@@ -2646,7 +2700,7 @@ async function handleApi(req, res, url) {
         error(res, 409, 'A data de conclusão precisa de revisão administrativa.');
         return null;
       }
-      if (Date.now() < dueAt.getTime()) {
+      if (!require('./lib/video-demo.cjs').available(request, day)) {
         error(
           res,
           409,
@@ -2683,6 +2737,7 @@ async function handleApi(req, res, url) {
       requestId: request.id,
       animalId: request.animalId,
       adopterId: user.id,
+      ...(request.demonstration ? { demonstration: true, demoScenario: request.demoScenario } : {}),
       day,
       adaptation: body.adaptation,
       health: inputText(body.health, 1200),
@@ -2705,13 +2760,20 @@ async function handleApi(req, res, url) {
             ' dias.' +
             (record.needsHelp ? ' A família pediu ajuda; responda no painel.' : ''),
         );
-      if (record.needsHelp)
-        eventMail(
-          ownerId,
-          'help',
-          'followup:' + record.id + ':help',
-          'painel-doador.html?tab=acompanhamentos',
-        );
+      eventMail(
+        ownerId,
+        record.needsHelp ? 'help' : 'followup',
+        'followup:' + record.id + ':received',
+        'painel-doador.html?tab=acompanhamentos',
+        { day, demonstration: request.demonstration === true },
+      );
+      eventMail(
+        user.id,
+        'followupReceipt',
+        'followup:' + record.id + ':receipt',
+        'minhas-solicitacoes.html',
+        { day, demonstration: request.demonstration === true },
+      );
       db.exec('COMMIT');
     } catch (err) {
       db.exec('ROLLBACK');
@@ -2758,6 +2820,7 @@ async function handleApi(req, res, url) {
         'helpResponse',
         'followup:' + f.id + ':response',
         'minhas-solicitacoes.html',
+        { demonstration: r.demonstration === true },
       );
       db.exec('COMMIT');
     } catch (err) {
@@ -3026,6 +3089,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
+  followupReminders.start();
   mail.start();
   backups.start();
   console.log(`PotyPet rodando em http://127.0.0.1:${PORT}`);

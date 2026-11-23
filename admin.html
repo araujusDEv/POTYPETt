@@ -39,6 +39,19 @@
   <span class="eyebrow">Dashboard administrativo</span>
   <h1>Visão geral da plataforma</h1>
   <section class="card" style="padding:18px;margin:18px 0;" aria-labelledby="launch-heading"><h2 id="launch-heading">Preparação para publicação</h2><p>Confira envio, armazenamento, cópias de segurança e registros de exemplo. Configuração local não comprova funcionamento no provedor.</p><button type="button" id="check-launch-status" class="btn btn-outline">Conferir preparação</button><div id="launch-status" aria-live="polite"></div></section>
+  <section class="card" style="padding:18px;margin:18px 0;" aria-labelledby="email-demo-heading">
+    <h2 id="email-demo-heading">E-mails e demonstração do acompanhamento</h2>
+    <p>O teste de envio usa o e-mail da sua conta administradora. Confira a caixa de entrada e o spam; uma mensagem na fila ainda não comprova chegada.</p>
+    <button type="button" id="test-email-delivery" class="btn btn-outline">Enviar teste para meu e-mail</button>
+    <div id="email-test-status" role="status"></div>
+    <p>Para o vídeo: Nino é um animal fictício e privado, vinculado a ongpotypet@gmail.com e hypestoreoofc@gmail.com. Preparar o cenário registra as etapas simuladas de 7 e 30 dias e envia os avisos às duas contas. Avançar libera a etapa de 90 dias para o adotante responder. O cenário fica fora das estatísticas públicas.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button type="button" id="check-video-demo" class="btn btn-outline">Consultar demonstração</button>
+      <button type="button" id="prepare-video-demo" class="btn btn-outline">Preparar 7 e 30 dias</button>
+      <button type="button" id="advance-video-demo" class="btn btn-outline">Avançar demonstração para 90 dias</button>
+    </div>
+    <div id="video-demo-status" role="status"></div>
+  </section>
   <div class="dashboard-grid" id="stats-grid"></div>
   <div class="chips">
     <button class="chip active" id="tab-pendentes">Anúncios pendentes</button>
@@ -86,6 +99,6 @@
 <script src="js/app-runtime.js?v=20261119-governanca-1"></script>
 <script src="js/icons.js?v=20261013-potypet-rc1"></script>
 <script src="js/nav.js?v=20261013-potypet-rc4"></script>
-<script src="js/pages/admin.js?v=20261119-governanca-1"></script>
+<script src="js/pages/admin.js?v=20261122-email-video-1"></script>
 </body>
 </html>

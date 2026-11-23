@@ -68,7 +68,14 @@ const env = { NODE_ENV: 'production', EMAIL_TRANSPORT: 'gmail_http', PUBLIC_BASE
     assert.equal(db.prepare('SELECT payload FROM mail_outbox').get().payload, null);
     remaining = 0; mail.queue('outra@example.test', 'verify', 'b'.repeat(43));
     await mail.pump(); const failed = db.prepare('SELECT * FROM mail_outbox WHERE delivered_at IS NULL').get();
-    assert.equal(failed.last_error, 'EQUOTA'); assert.equal(failed.attempts, 1); assert.ok(failed.payload); mail.stop();
+    assert.equal(failed.last_error, 'EQUOTA'); assert.equal(failed.attempts, 0); assert.ok(failed.payload);
+    assert.ok(failed.next_attempt >= Date.now() + 6 * 3600000 - 2000);
+    assert.equal(failed.failed_at, null);
+    remaining = 100;
+    await mail.pump(); assert.equal(db.prepare('SELECT delivered_at FROM mail_outbox WHERE id=?').get(failed.id).delivered_at, null);
+    db.prepare('UPDATE mail_outbox SET next_attempt=0 WHERE id=?').run(failed.id);
+    await mail.pump(); assert.ok(db.prepare('SELECT delivered_at FROM mail_outbox WHERE id=?').get(failed.id).delivered_at);
+    mail.stop();
   } finally { globalThis.fetch = previousFetch; db.close(); }
   console.log('OK e-mail HTTPS — assinatura, expiração, remetente, quota, repetição, redirecionamento Google, fila cifrada e falha sem falsa entrega');
 })().catch((e) => { console.error(e); process.exitCode = 1; });

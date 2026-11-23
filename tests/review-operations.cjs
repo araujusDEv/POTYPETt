@@ -298,7 +298,7 @@ async function confirm(address, guest) {
         'rejected',
       );
     });
-    await test('Contato completo registra protocolo sem enviar resposta automática', async () => {
+    await test('Contato registra protocolo, avisa somente a equipe e não replica o relato por e-mail', async () => {
       const before = sql((db) => db.prepare('SELECT id FROM mail_outbox ORDER BY id').all());
       const r = await guest.call(
         'POST',
@@ -321,10 +321,9 @@ async function confirm(address, guest) {
         },
         400,
       );
-      assert.deepEqual(
-        sql((db) => db.prepare('SELECT id FROM mail_outbox ORDER BY id').all()),
-        before,
-      );
+      assert.equal(sql((db) => db.prepare('SELECT COUNT(*) AS n FROM mail_outbox').get().n), before.length + 1);
+      const m = await message('admin@adotapet.com', 'nova mensagem de atendimento');
+      assert.ok(!m.text.includes('Contestação fictícia') && !m.text.includes('nao-confirmado@example.test'));
       await guest.call('GET', '/api/reports', undefined, 401);
     });
     await test('Suspensão/reativação enviam aviso genérico, preservam histórico e exigem login', async () => {
