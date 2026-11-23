@@ -43,6 +43,23 @@ function testReminders() {
     mail.stop();
   } finally { db.close(); }
 }
+function testAdminDemoStatistics() {
+  const grid = { innerHTML: '' }, vm = require('node:vm');
+  const context = vm.createContext({
+    App: { ready() {} }, document: { getElementById: () => grid },
+    Store: {
+      getUsers: () => [],
+      getAnimals: () => [{ id: 1, status: 'adotado', demonstration: true }, { id: 2, status: 'disponivel' }],
+      getRequests: () => [{ id: 1, status: 'concluida', demonstration: true, createdAt: '2026-11-01', completedAt: '2026-11-22' }],
+      getMissing: () => [], getReports: () => [],
+    },
+  });
+  vm.runInContext(fs.readFileSync(path.join(root, 'js/pages/admin.js'), 'utf8'), context);
+  vm.runInContext('renderStats()', context);
+  assert.match(grid.innerHTML, /<b>1<\/b>Animais cadastrados/);
+  assert.match(grid.innerHTML, /<b>0<\/b>Adotados/);
+  assert.match(grid.innerHTML, /<b>-<\/b>Dias médios/);
+}
 async function messages(expected) {
   for (let i = 0; i < 600; i++) {
     const dir = path.join(dataDir, 'email-preview');
@@ -84,6 +101,9 @@ async function messages(expected) {
     sql((db) => db.prepare('UPDATE users SET email_verified_at=created_at WHERE id=?').run(f.users.other.id));
     const demo = await admin.call('POST', '/api/admin/video-demo', { confirmed: true });
     assert.equal(demo.day, 30); assert.equal(count(), 4);
+    const demoCard = (await admin.call('GET', '/api/animals/cards?view=manage')).find((a) => a.id === demo.animalId);
+    assert.equal(demoCard.demonstration, true, 'A lista compacta deve preservar a identificação de demonstração usada pelos indicadores administrativos.');
+    assert.equal(demoCard.sex, 'macho');
     assert.deepEqual(await admin.call('POST', '/api/admin/video-demo', { confirmed: true }), demo);
     assert.equal(count(), 4);
     assert.deepEqual(await guest.call('GET', '/api/stats'), before);
@@ -111,7 +131,7 @@ async function messages(expected) {
       assert.ok(adopterMails.some((m) => m.subject.includes(`${day} dias registrado`)));
     }
     for (const m of [...ownerMails, ...adopterMails]) {
-      assert.match(m.text, /DEMONSTRAÇÃO/); assert.doesNotMatch(m.text, /Relato privado/);
+      assert.doesNotMatch(m.text, /demonstração|simulad|fictíci|Relato privado/iu);
     }
     await guest.call('POST', '/api/contact', { name: 'Teste controlado', email: 'endereco-nao-verificado@example.test', message: 'Conteúdo privado de atendimento.' }, 201);
     sent = await messages(8);
@@ -130,7 +150,31 @@ async function messages(expected) {
     assert.equal(clock.available({ completedAt: new Date().toISOString(), demoDay: 90 }, 90), false);
     assert.equal(clock.available({ completedAt: 'inválido' }, 7), false);
     testReminders();
+    testAdminDemoStatistics();
     assert.deepEqual(await guest.call('GET', '/api/stats'), before);
+    sql((db) => {
+      const requests = JSON.parse(db.prepare("SELECT value FROM app_state WHERE key='requests'").get().value);
+      const r = requests.find((r) => r.id === demo.requestId); delete r.presentationVersion; r.animalName = 'Nino — demonstração';
+      db.prepare("UPDATE app_state SET value=? WHERE key='requests'").run(JSON.stringify(requests));
+      const animals = JSON.parse(db.prepare("SELECT value FROM app_state WHERE key='animals'").get().value);
+      animals.find((a) => a.id === demo.animalId).name = 'Nino — demonstração';
+      db.prepare("UPDATE app_state SET value=? WHERE key='animals'").run(JSON.stringify(animals));
+      const follows = JSON.parse(db.prepare("SELECT value FROM app_state WHERE key='followups'").get().value);
+      for (const f of follows.filter((f) => f.requestId === demo.requestId && [7, 30].includes(f.day))) {
+        f.health = 'Demonstração: alimentação em dia.'; f.behavior = 'Demonstração: adaptação tranquila.';
+      }
+      db.prepare("UPDATE app_state SET value=? WHERE key='followups'").run(JSON.stringify(follows));
+    });
+    const beforeRefresh = count();
+    await admin.call('POST', '/api/admin/video-demo', { confirmed: true });
+    assert.equal(count(), beforeRefresh + 4);
+    await admin.call('POST', '/api/admin/video-demo', { confirmed: true });
+    assert.equal(count(), beforeRefresh + 4);
+    assert.equal((await admin.call('GET', '/api/animals/' + demo.animalId)).name, 'Nino');
+    assert.ok((await other.call('GET', '/api/followups')).filter((f) => f.requestId === demo.requestId).every((f) => !/demonstração/iu.test(f.health + f.behavior)));
+    assert.equal((await admin.call('GET', '/api/admin/video-demo')).day, 90);
+    sent = await messages(13);
+    for (const m of sent) assert.doesNotMatch(m.text, /demonstração|simulad|fictíci/iu);
     for (const route of ['/api/admin/video-demo', '/api/admin/video-demo/advance']) {
       await admin.call('POST', '/api/auth/login', { email: 'admin@adotapet.com', password: 'admin123' });
       let request;
