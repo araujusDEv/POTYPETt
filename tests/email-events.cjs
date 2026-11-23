@@ -103,6 +103,7 @@ async function messages(expected) {
     assert.equal(demo.day, 30); assert.equal(count(), 4);
     const demoCard = (await admin.call('GET', '/api/animals/cards?view=manage')).find((a) => a.id === demo.animalId);
     assert.equal(demoCard.demonstration, true, 'A lista compacta deve preservar a identificação de demonstração usada pelos indicadores administrativos.');
+    assert.equal(demoCard.sex, 'macho');
     assert.deepEqual(await admin.call('POST', '/api/admin/video-demo', { confirmed: true }), demo);
     assert.equal(count(), 4);
     assert.deepEqual(await guest.call('GET', '/api/stats'), before);
