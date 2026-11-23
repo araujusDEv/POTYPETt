@@ -1120,8 +1120,10 @@ async function handleApi(req, res, url) {
     if (method !== 'POST') return error(res, 405, 'Método não permitido.');
     const body = await readBody(req);
     if (body.confirmed !== true) return error(res, 400, 'Confirme a criação ou avanço da demonstração.');
+    const currentAdmin = requireUser(req, res, ['admin']);
+    if (!currentAdmin) return;
     if (!mail.enabled) return error(res, 409, 'Configure o envio de e-mail antes da demonstração.');
-    return json(res, 200, pathname.endsWith('/advance') ? videoDemo.advance(admin) : videoDemo.create(admin));
+    return json(res, 200, pathname.endsWith('/advance') ? videoDemo.advance(currentAdmin) : videoDemo.create(currentAdmin));
   }
   if (method === 'POST' && pathname === '/api/admin/email-test') {
     const admin = requireUser(req, res, ['admin']);

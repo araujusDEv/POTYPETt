@@ -131,6 +131,20 @@ async function messages(expected) {
     assert.equal(clock.available({ completedAt: 'inválido' }, 7), false);
     testReminders();
     assert.deepEqual(await guest.call('GET', '/api/stats'), before);
+    for (const route of ['/api/admin/video-demo', '/api/admin/video-demo/advance']) {
+      await admin.call('POST', '/api/auth/login', { email: 'admin@adotapet.com', password: 'admin123' });
+      let request;
+      const response = new Promise((resolve, reject) => {
+        request = require('node:http').request(base + route, { method: 'POST', headers: {
+          Cookie: admin.cookie, 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength('{"confirmed":true}'),
+        } }, (r) => { r.resume(); r.on('end', () => resolve(r.statusCode)); });
+        request.on('error', reject); request.write('{"confirmed":');
+      });
+      await new Promise((r) => setTimeout(r, 150));
+      sql((db) => db.prepare("DELETE FROM sessions WHERE user_id IN (SELECT id FROM users WHERE role='admin')").run());
+      request.end('true}');
+      assert.equal(await response, 401, 'Sessão revogada durante a leitura do pedido deve bloquear a demonstração.');
+    }
     console.log('OK — e-mails locais de 7/30/90, destinatários, sigilo, cenário único, avanço restrito, repetição, contato e teste administrativo. Não comprova entrega no Gmail.');
   } finally {
     if (server?.exitCode === null && server.signalCode === null) {
