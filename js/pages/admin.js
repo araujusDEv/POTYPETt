@@ -461,8 +461,8 @@ function bindEmailAndVideoTools() {
     ['advance-video-demo', 'POST', '/api/admin/video-demo/advance'],
   ]) bind(id, 'video-demo-status', async () => {
     const result = await apiRequestAsync(method, route, method === 'POST' ? { confirmed: true } : undefined);
-    if (!result.exists) return 'Cenário ainda não preparado. As duas contas de teste precisam existir e estar confirmadas e aprovadas.';
-    return `Nino — demonstração: animal #${result.animalId}, solicitação #${result.requestId}, ${result.day} dias simulados. Entre como ${result.adopterEmail} em Minhas Solicitações para responder e como ${result.ownerEmail} em Acompanhamentos para conferir. ${result.message}`;
+    if (!result.exists) return 'Acompanhamento ainda não preparado. As duas contas precisam existir e estar confirmadas e aprovadas.';
+    return `Nino: animal #${result.animalId}, solicitação #${result.requestId}, acompanhamento de ${result.day} dias. Entre como ${result.adopterEmail} em Minhas Solicitações para responder e como ${result.ownerEmail} em Acompanhamentos para conferir.`;
   });
 }
 
@@ -538,7 +538,7 @@ App.ready(() => {
           [
             'Contas',
             demo.weakAccounts.length +
-              ' com credenciais conhecidas de demonstração; revise sem apagar vínculos.',
+              ' com credenciais conhecidas do pacote inicial; revise sem apagar vínculos.',
           ],
         ];
         area.innerHTML =
@@ -578,7 +578,7 @@ App.ready(() => {
                 ' · confirme os dados na fonte antes de divulgar.</li>',
             )
             .join('') +
-          '</ul><p>Fotos de exemplo, isoladamente, não determinam se um registro é fictício. A conferência não apaga nem altera esses dados.</p>';
+          '</ul><p>Uma foto de exemplo não confirma a origem de um cadastro. Essa conferência preserva os dados.</p>';
       } catch (err) {
         area.textContent = err.message;
       }

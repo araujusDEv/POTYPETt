@@ -1,7 +1,7 @@
 /* Private request tools shared by the applicant and the responsible person's panel. */
 function adoptionNextStep(r) {
   if (r.demonstration)
-    return 'Demonstração com dados e tempo simulados. O adotante pode enviar o acompanhamento; não há adoção real ou termo para assinar.';
+    return 'Quem age: adotante. Envie os acompanhamentos de 7, 30 e 90 dias. O responsável recebe as atualizações e responde aos pedidos de ajuda.';
   if (r.status === 'pendente' || r.status === 'em_analise')
     return 'Quem age: responsável. Próximo passo: analisar o formulário e aprovar ou recusar o interesse. O interessado pode responder pela conversa privada.';
   if (r.status === 'aprovada' && !r.handoverAt)

@@ -130,7 +130,7 @@ async function messages(expected) {
       assert.ok(adopterMails.some((m) => m.subject.includes(`${day} dias registrado`)));
     }
     for (const m of [...ownerMails, ...adopterMails]) {
-      assert.match(m.text, /DEMONSTRAÇÃO/); assert.doesNotMatch(m.text, /Relato privado/);
+      assert.doesNotMatch(m.text, /demonstração|simulad|fictíci|Relato privado/iu);
     }
     await guest.call('POST', '/api/contact', { name: 'Teste controlado', email: 'endereco-nao-verificado@example.test', message: 'Conteúdo privado de atendimento.' }, 201);
     sent = await messages(8);
@@ -151,6 +151,29 @@ async function messages(expected) {
     testReminders();
     testAdminDemoStatistics();
     assert.deepEqual(await guest.call('GET', '/api/stats'), before);
+    sql((db) => {
+      const requests = JSON.parse(db.prepare("SELECT value FROM app_state WHERE key='requests'").get().value);
+      const r = requests.find((r) => r.id === demo.requestId); delete r.presentationVersion; r.animalName = 'Nino — demonstração';
+      db.prepare("UPDATE app_state SET value=? WHERE key='requests'").run(JSON.stringify(requests));
+      const animals = JSON.parse(db.prepare("SELECT value FROM app_state WHERE key='animals'").get().value);
+      animals.find((a) => a.id === demo.animalId).name = 'Nino — demonstração';
+      db.prepare("UPDATE app_state SET value=? WHERE key='animals'").run(JSON.stringify(animals));
+      const follows = JSON.parse(db.prepare("SELECT value FROM app_state WHERE key='followups'").get().value);
+      for (const f of follows.filter((f) => f.requestId === demo.requestId && [7, 30].includes(f.day))) {
+        f.health = 'Demonstração: alimentação em dia.'; f.behavior = 'Demonstração: adaptação tranquila.';
+      }
+      db.prepare("UPDATE app_state SET value=? WHERE key='followups'").run(JSON.stringify(follows));
+    });
+    const beforeRefresh = count();
+    await admin.call('POST', '/api/admin/video-demo', { confirmed: true });
+    assert.equal(count(), beforeRefresh + 4);
+    await admin.call('POST', '/api/admin/video-demo', { confirmed: true });
+    assert.equal(count(), beforeRefresh + 4);
+    assert.equal((await admin.call('GET', '/api/animals/' + demo.animalId)).name, 'Nino');
+    assert.ok((await other.call('GET', '/api/followups')).filter((f) => f.requestId === demo.requestId).every((f) => !/demonstração/iu.test(f.health + f.behavior)));
+    assert.equal((await admin.call('GET', '/api/admin/video-demo')).day, 90);
+    sent = await messages(13);
+    for (const m of sent) assert.doesNotMatch(m.text, /demonstração|simulad|fictíci/iu);
     for (const route of ['/api/admin/video-demo', '/api/admin/video-demo/advance']) {
       await admin.call('POST', '/api/auth/login', { email: 'admin@adotapet.com', password: 'admin123' });
       let request;

@@ -1,54 +1,33 @@
-E-mails e vídeo do acompanhamento — revisão de 22/11/2026
+E-mails e acompanhamento de Nino — 22/11/2026
 
-Fluxos cobertos
-- Confirmação de cadastro e reenvio, orientação para e-mail já cadastrado e recuperação de senha.
-- Cadastro de organização e anúncios para análise; decisões sobre contas e anúncios.
-- Solicitação de adoção, decisões e etapas da entrega, mensagens privadas.
-- Avistamento, contato com a equipe, denúncia e envio/decisão de campanha.
-- Acompanhamentos de 7, 30 e 90 dias: aviso ao responsável e confirmação de registro ao adotante.
-- Pedido de ajuda e resposta do responsável.
-- Lembrete de acompanhamento disponível para o adotante: uma vez por etapa, enquanto o servidor estiver ativo.
+Contas
+Equipe e remetente: potypett@gmail.com.
+Responsável: ongpotypet@gmail.com.
+Adotante: hypestoreoofc@gmail.com.
 
-Proteção do conteúdo
-Avisos de eventos são genéricos e apontam para páginas autenticadas. Não enviam fotos,
-questionários, documentos, relatos privados nem contatos da outra parte. O contato anônimo
-gera protocolo na tela e um aviso à equipe; não envia resposta automática ao endereço
-digitado, que ainda não foi confirmado. A equipe responde pelo e-mail informado após análise.
+Para a gravação
+1. Na conta adotante, abra Minhas Solicitações e mostre as atualizações de 7 e 30 dias.
+2. Na conta administradora, abra o painel e clique “Liberar acompanhamento de 90 dias”.
+3. Volte à conta adotante, atualize a página e responda os 90 dias, com foto opcional.
+4. Confira no Gmail do adotante “acompanhamento de 90 dias registrado”.
+5. Confira no Gmail do responsável “acompanhamento de 90 dias recebido”. Se pedir ajuda,
+   o assunto será “pedido de ajuda pós-adoção”; a resposta do responsável também avisa o adotante.
 
-Fila e limites
-Os destinatários de eventos precisam ter e-mail confirmado. A fila é cifrada e persistida
-no mesmo banco do sistema (Turso/libSQL quando configurado). Eventos possuem identificador
-para evitar repetição de um mesmo envio. Mensagens com token expirado/usado são canceladas.
-Falhas de transporte têm tentativas controladas; cota Google esgotada aguarda seis horas
-antes de tentar novamente, sem consumir as cinco tentativas de falha comum. Isso evita
-descartar mensagens apenas porque a cota diária ainda não foi renovada.
-O Google Apps Script possui cota de destinatários, dependente da conta. Consulte:
-https://developers.google.com/apps-script/guides/services/quotas
-Aceitação pelo provedor não garante caixa de entrada: conferir spam e chegada real.
-O teste do painel é limitado ao próprio administrador: três por hora, intervalo de um minuto.
-Hospedagem que suspende o servidor adia lembretes até o serviço voltar a ficar ativo.
+O botão “Preparar 7 e 30 dias” mantém o mesmo animal e a mesma solicitação.
+A primeira execução desta revisão atualiza o cadastro anterior de Nino e reenvia os quatro
+avisos de 7 e 30 dias com o texto corrigido. Repetir o preparo não reenvia esses avisos.
+A etapa de 90 dias permanece sem resposta até o adotante enviá-la.
 
-Cenário do vídeo
-No painel administrativo, use “Preparar 7 e 30 dias”. Exige as contas existentes, confirmadas
-e aprovadas ongpotypet@gmail.com (responsável) e hypestoreoofc@gmail.com (adotante).
-Não cria contas, não altera senhas nem confirma e-mails por conta própria.
-Cria apenas um animal: “Nino — demonstração”, privado e arquivado, com pedido e registros
-fictícios identificados. Repetir o preparo retorna o mesmo cenário e não reenvia os avisos.
-As datas de criação/conclusão permanecem reais: somente o relógio desse cenário é simulado.
-Não cria termo, concordância, entrega ou adoção real; fica fora de histórias e estatísticas públicas.
-As etapas 7 e 30 são preparadas e enviam avisos de demonstração às duas contas.
+Fluxos revisados
+Confirmação de cadastro, reenvio, recuperação de senha, cadastro de organização, anúncios,
+solicitações e etapas da adoção, mensagens privadas, leitura do termo, avistamentos,
+contato, denúncias, campanhas, acompanhamentos, pedidos de ajuda e respostas.
 
-Para gravar:
-1. Mostre em Minhas Solicitações, como hypestoreoofc@gmail.com, os registros de 7 e 30 dias.
-2. Como administrador, clique “Avançar demonstração para 90 dias”. Isso envia um lembrete ao adotante.
-3. Atualize Minhas Solicitações e responda os 90 dias durante o vídeo, com foto opcional.
-4. Confira “acompanhamento de 90 dias registrado” no Gmail do adotante e
-   “acompanhamento de 90 dias recebido” no Gmail do responsável. Se marcar pedido de ajuda,
-   o responsável recebe “pedido de ajuda pós-adoção” em lugar do aviso comum.
-5. Se houver ajuda, responda no painel do responsável; o adotante recebe o aviso da resposta.
-Não avance ou responda os 90 dias antes da gravação se quiser mostrar o primeiro envio.
-Não use o cenário como evidência de acompanhamento real no TCC.
+Os avisos remetem à área autenticada, sem enviar fotos ou relatos privados por e-mail.
+O contato gera protocolo na tela e um aviso à equipe; não envia confirmação automática
+para o endereço informado. Testes de recuperação não alteram a senha antes de concluir a troca.
 
-Validação
-Os testes automatizados usam bancos temporários, transporte local ou serviços simulados.
-Só a conferência das mensagens nas contas destinatárias comprova a chegada no Gmail.
+A fila é cifrada e persistente. Erros têm tentativas controladas e a cota Google esgotada
+adia o envio. Lembretes de etapas são processados enquanto o servidor está ativo.
+Consulte os limites do provedor: https://developers.google.com/apps-script/guides/services/quotas
+A chegada deve ser conferida na caixa de entrada e, se necessário, na pasta Spam.
