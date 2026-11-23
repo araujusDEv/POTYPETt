@@ -587,7 +587,7 @@ async function stop() {
     });
     assert.ok(!(await guest.call('GET', '/api/stories')).some((s) => s.id === completed.id));
     const me = await other.call('GET', '/api/auth/me');
-    assert.equal(me.user.termsVersion, '2026-11-19-potypet-operacao-1');
+    assert.equal(me.user.termsVersion, require('../lib/governance.cjs').version);
     assert.ok(me.user.termsAcceptedAt);
     assert.equal((await admin.call('GET', '/api/auth/me')).user.termsVersion, null);
     for (const page of ['termos.html', 'privacidade.html']) {

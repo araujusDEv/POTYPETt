@@ -14,7 +14,9 @@ document.querySelectorAll('[data-password-target]').forEach((button) =>
     const show = input.type === 'password';
     input.type = show ? 'text' : 'password';
     button.innerHTML = svgIcon(show ? 'eye-off' : 'eye');
-    button.setAttribute('aria-label', show ? 'Ocultar senha' : 'Mostrar senha');
+    const label = button.dataset.passwordTarget === 'r-confirm' ? 'confirmação' : 'senha';
+    button.setAttribute('aria-label', (show ? 'Ocultar ' : 'Mostrar ') + label);
+    button.setAttribute('aria-pressed', String(show));
     input.focus();
   }),
 );
